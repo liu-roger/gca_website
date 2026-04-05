@@ -1,0 +1,13 @@
+{
+  "name": "gca-website",
+  "version": "1.0.0",
+  "description": "Global Communication Association landing page",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "puppeteer": "^24.40.0"
+  }
+}
