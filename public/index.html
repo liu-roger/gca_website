@@ -18,13 +18,22 @@
       <span class="nav-logo-name">Global Communication<br>Association</span>
     </a>
     <ul class="nav-links" role="list">
-      <li><a href="#about">About</a></li>
-      <li><a href="#pillars">Pillars</a></li>
-      <li><a href="#programs">Programs</a></li>
-      <li><a href="#community">Community</a></li>
-      <li><a href="#join">Membership</a></li>
+      <li class="nav-dropdown">
+        <span class="nav-dropdown-toggle">About</span>
+        <div class="nav-dropdown-menu">
+          <a href="#about">About GCA</a>
+          <a href="#pillars">Pillars</a>
+          <a href="#programs">Programs</a>
+          <a href="#community">Community</a>
+        </div>
+      </li>
+      <li><a href="#join">Join GCA</a></li>
+      <li><a href="/events.html">Events</a></li>
     </ul>
-    <a href="#join" class="btn btn-sm btn-primary">Join GCA</a>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a href="/members.html" class="btn btn-sm btn-outline" style="border-color:var(--accent);color:var(--accent)" id="nav-login-btn">Login</a>
+      <a href="#join" class="btn btn-sm btn-primary">Join GCA</a>
+    </div>
   </div>
 </nav>
 
@@ -157,30 +166,73 @@
 
 <section id="join" class="section b-t">
   <div class="container">
-    <div style="max-width:520px;margin-bottom:0.8rem">
-      <div class="sec-label sr"><span class="sec-label-dot"></span> Membership</div>
-      <h2 class="sec-title sr">Ready to <em>join the conversation?</em></h2>
-    </div>
-    <p class="sr" style="font-size:0.91rem;line-height:1.75;color:var(--fg-muted);max-width:440px;margin-bottom:0">Open to all who share our commitment to connection and progress.</p>
-    <div class="tiers-grid">
-      <div class="tier sr">
-        <p class="tier-type">Student</p><div class="tier-price">Free</div>
-        <p class="tier-desc">For current students in any communication-related field.</p>
-        <ul class="tier-feats"><li>Member forums &amp; community</li><li>Discounted congress tickets</li><li>Digital resource library</li><li>Student newsletter &amp; job board</li></ul>
-        <a href="#" class="tier-btn t-btn-ghost">Get Started</a>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start">
+      <div>
+        <div class="sec-label sr"><span class="sec-label-dot"></span> Membership</div>
+        <h2 class="sec-title sr" style="margin-bottom:1.2rem">Apply to <em>join GCA.</em></h2>
+        <p class="sr" style="font-size:0.93rem;line-height:1.78;color:var(--fg-muted);margin-bottom:0.75rem">GCA membership is open to scholars, practitioners, educators, and anyone committed to advancing global communication. There are no fees — applying is completely free.</p>
+        <p class="sr" style="font-size:0.93rem;line-height:1.78;color:var(--fg-muted);margin-bottom:2rem">Applications are reviewed on a rolling basis. You will receive a decision within 10 business days.</p>
+        <div class="sr" style="display:flex;flex-direction:column;gap:0.7rem">
+          <div style="display:flex;align-items:center;gap:0.9rem">
+            <span style="width:22px;height:22px;border-radius:50%;background:var(--accent-dim);border:1px solid var(--accent-mid);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:var(--accent);flex-shrink:0">1</span>
+            <span style="font-size:0.83rem;color:var(--fg-muted)">Fill out the application form</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.9rem">
+            <span style="width:22px;height:22px;border-radius:50%;background:var(--accent-dim);border:1px solid var(--accent-mid);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:var(--accent);flex-shrink:0">2</span>
+            <span style="font-size:0.83rem;color:var(--fg-muted)">Our team reviews your background and interests</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.9rem">
+            <span style="width:22px;height:22px;border-radius:50%;background:var(--accent-dim);border:1px solid var(--accent-mid);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:var(--accent);flex-shrink:0">3</span>
+            <span style="font-size:0.83rem;color:var(--fg-muted)">Receive your welcome package and join the community</span>
+          </div>
+        </div>
       </div>
-      <div class="tier featured sr">
-        <div class="tier-badge">Most Popular</div>
-        <p class="tier-type">Professional</p><div class="tier-price">$120 <span class="per">/ yr</span></div>
-        <p class="tier-desc">For working professionals and independent researchers.</p>
-        <ul class="tier-feats"><li>Full journal archive access</li><li>Mentorship matching</li><li>Priority congress registration</li><li>Fellowship eligibility</li><li>Regional chapter membership</li></ul>
-        <a href="#" class="tier-btn t-btn-solid">Join as Professional</a>
-      </div>
-      <div class="tier sr">
-        <p class="tier-type">Institutional</p><div class="tier-price">Custom</div>
-        <p class="tier-desc">For universities, organizations, and research institutes.</p>
-        <ul class="tier-feats"><li>Multi-seat team access</li><li>Institutional journal licensing</li><li>Co-branded event opportunities</li><li>Dedicated account management</li></ul>
-        <a href="#" class="tier-btn t-btn-ghost">Contact Us</a>
+      <div class="sr">
+        <form id="apply-form" style="border:1px solid var(--border);border-radius:var(--r);padding:2rem;background:var(--white)" novalidate>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.6rem">
+            <p style="font-size:0.83rem;font-weight:700;color:var(--fg)">Membership Application</p>
+            <span style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);background:var(--accent-dim);border:1px solid var(--accent-mid);padding:3px 10px;border-radius:100px">Free</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:0.8rem">
+            <div>
+              <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--fg-muted);margin-bottom:0.35rem" for="f-first">First name</label>
+              <input id="f-first" type="text" placeholder="Jane" required style="width:100%;padding:9px 12px;font-size:0.82rem;font-family:var(--ff);border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--fg);outline:none;transition:border-color 0.15s ease" />
+            </div>
+            <div>
+              <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--fg-muted);margin-bottom:0.35rem" for="f-last">Last name</label>
+              <input id="f-last" type="text" placeholder="Smith" required style="width:100%;padding:9px 12px;font-size:0.82rem;font-family:var(--ff);border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--fg);outline:none;transition:border-color 0.15s ease" />
+            </div>
+          </div>
+          <div style="margin-bottom:0.8rem">
+            <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--fg-muted);margin-bottom:0.35rem" for="f-email">Email address</label>
+            <input id="f-email" type="email" placeholder="jane@university.edu" required style="width:100%;padding:9px 12px;font-size:0.82rem;font-family:var(--ff);border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--fg);outline:none;transition:border-color 0.15s ease" />
+          </div>
+          <div style="margin-bottom:0.8rem">
+            <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--fg-muted);margin-bottom:0.35rem" for="f-org">Organization / Institution</label>
+            <input id="f-org" type="text" placeholder="University or employer" style="width:100%;padding:9px 12px;font-size:0.82rem;font-family:var(--ff);border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--fg);outline:none;transition:border-color 0.15s ease" />
+          </div>
+          <div style="margin-bottom:0.8rem">
+            <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--fg-muted);margin-bottom:0.35rem" for="f-role">Your role</label>
+            <select id="f-role" style="width:100%;padding:9px 12px;font-size:0.82rem;font-family:var(--ff);border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--fg);outline:none;appearance:none;transition:border-color 0.15s ease">
+              <option value="" disabled selected>Select one&hellip;</option>
+              <option>Academic / Researcher</option>
+              <option>Student</option>
+              <option>Journalist / Media Professional</option>
+              <option>Practitioner / Consultant</option>
+              <option>Policy / Government</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div style="margin-bottom:1.4rem">
+            <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--fg-muted);margin-bottom:0.35rem" for="f-why">Why do you want to join GCA? <span style="font-weight:400;color:var(--fg-subtle)">(optional)</span></label>
+            <textarea id="f-why" rows="3" placeholder="Share your interest or area of focus&hellip;" style="width:100%;padding:9px 12px;font-size:0.82rem;font-family:var(--ff);border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--fg);outline:none;resize:vertical;transition:border-color 0.15s ease"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-md" style="width:100%;justify-content:center" id="apply-submit">Submit Application</button>
+          <div id="apply-success" style="display:none;margin-top:1rem;padding:0.9rem 1rem;border:1px solid rgba(123,63,160,0.25);border-radius:var(--r);background:var(--accent-dim)">
+            <p style="font-size:0.82rem;font-weight:600;color:var(--accent);margin-bottom:2px">Application received!</p>
+            <p style="font-size:0.78rem;color:var(--fg-muted)">Thank you — we'll be in touch within 10 business days.</p>
+          </div>
+        </form>
       </div>
     </div>
   </div>

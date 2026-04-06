@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Member Login — Global Communication Association</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .members-page {
+      min-height: 100vh;
+      padding-top: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+    }
+
+    .login-wrap {
+      width: 100%;
+      max-width: 420px;
+      padding: 2rem;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .login-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      margin-bottom: 1.8rem;
+    }
+
+    .login-logo img { height: 36px; width: auto; }
+
+    .login-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-mid);
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 1.2rem;
+    }
+
+    .login-badge-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: dot-blink 2.4s ease-in-out infinite;
+    }
+
+    .login-header h1 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      color: var(--fg);
+      margin-bottom: 0.4rem;
+    }
+
+    .login-header p {
+      font-size: 0.83rem;
+      color: var(--fg-muted);
+      line-height: 1.65;
+    }
+
+    .login-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 2rem;
+    }
+
+    .field { margin-bottom: 1rem; }
+
+    .field label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--fg-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 10px 13px;
+      font-size: 0.85rem;
+      font-family: var(--ff);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      background: var(--bg);
+      color: var(--fg);
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .field input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(123,63,160,0.1);
+    }
+
+    .field input::placeholder { color: var(--fg-subtle); }
+
+    .field-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.35rem;
+    }
+
+    .field-row label { margin-bottom: 0; }
+
+    .forgot-link {
+      font-size: 0.72rem;
+      color: var(--fg-subtle);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .forgot-link:hover { color: var(--accent); }
+
+    .remember-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .remember-row input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .remember-row label {
+      font-size: 0.75rem;
+      color: var(--fg-muted);
+      cursor: pointer;
+      margin: 0;
+    }
+
+    #login-submit {
+      width: 100%;
+      justify-content: center;
+      margin-bottom: 1.2rem;
+    }
+
+    .login-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .login-divider hr {
+      flex: 1;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    .login-divider span {
+      font-size: 0.68rem;
+      color: var(--fg-subtle);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .login-apply {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--fg-muted);
+    }
+
+    .login-apply a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .login-apply a:hover { color: var(--accent-hi); }
+
+    .login-error {
+      display: none;
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(200,40,40,0.2);
+      border-radius: var(--r);
+      background: rgba(200,40,40,0.05);
+      margin-bottom: 1rem;
+    }
+
+    .login-error p {
+      font-size: 0.78rem;
+      color: #b91c1c;
+    }
+
+    .login-success {
+      display: none;
+      padding: 0.9rem 1rem;
+      border: 1px solid rgba(123,63,160,0.25);
+      border-radius: var(--r);
+      background: var(--accent-dim);
+      margin-bottom: 1rem;
+    }
+
+    .login-success p:first-child {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+
+    .login-success p:last-child {
+      font-size: 0.75rem;
+      color: var(--fg-muted);
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 1.8rem;
+    }
+
+    .login-footer a {
+      font-size: 0.75rem;
+      color: var(--fg-subtle);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .login-footer a:hover { color: var(--fg-muted); }
+
+    @media (max-width: 480px) {
+      .login-wrap { padding: 1.5rem 1rem; }
+      .login-card  { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo" aria-label="GCA Home">
+      <img src="/brand_assets/GCA Logo.png" alt="GCA Logo" id="nav-logo-img" />
+      <span class="nav-logo-name">Global Communication<br>Association</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li class="nav-dropdown">
+        <span class="nav-dropdown-toggle">About</span>
+        <div class="nav-dropdown-menu">
+          <a href="/#about">About GCA</a>
+          <a href="/#pillars">Pillars</a>
+          <a href="/#programs">Programs</a>
+          <a href="/#community">Community</a>
+        </div>
+      </li>
+      <li><a href="/#join">Join GCA</a></li>
+      <li><a href="/events.html">Events</a></li>
+    </ul>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a href="/members.html" class="btn btn-sm btn-outline" style="border-color:var(--accent);color:var(--accent)" id="nav-login-btn">Login</a>
+      <a href="/#join" class="btn btn-sm btn-primary">Join GCA</a>
+    </div>
+  </div>
+</nav>
+
+<div class="members-page">
+  <div class="login-wrap">
+
+    <div class="login-header">
+      <a href="/" class="login-logo">
+        <img src="/brand_assets/GCA Logo.png" alt="GCA Logo" />
+      </a>
+      <div><span class="login-badge"><span class="login-badge-dot"></span> Members Only</span></div>
+      <h1>Welcome back.</h1>
+      <p>Sign in to access your member dashboard, journal archive, and community resources.</p>
+    </div>
+
+    <div class="login-card" id="login-card">
+      <div class="login-error" id="login-error">
+        <p>Incorrect username or password. Please try again.</p>
+      </div>
+      <div class="login-success" id="login-success">
+        <p>Signed in successfully!</p>
+        <p>Redirecting to your member dashboard&hellip;</p>
+      </div>
+
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label for="l-user">Username or email</label>
+          <input id="l-user" type="text" placeholder="your@email.com" autocomplete="username" />
+        </div>
+        <div class="field">
+          <div class="field-row">
+            <label for="l-pass">Password</label>
+            <a href="#" class="forgot-link">Forgot password?</a>
+          </div>
+          <input id="l-pass" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password" />
+        </div>
+        <div class="remember-row">
+          <input type="checkbox" id="l-remember" />
+          <label for="l-remember">Keep me signed in</label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-md" id="login-submit">Sign In</button>
+      </form>
+
+      <div class="login-divider">
+        <hr /><span>Not a member yet?</span><hr />
+      </div>
+      <p class="login-apply">
+        Apply for free at <a href="/#join">the membership page</a> &mdash; approval takes under 10 business days.
+      </p>
+    </div>
+
+    <div class="login-footer">
+      <a href="/">&#8592; Back to GCA home</a>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script>
+(function () {
+  if (sessionStorage.getItem('gca_logged_in')) {
+    window.location.replace('/dashboard.html');
+  }
+
+  if (sessionStorage.getItem('gca_logged_in')) {
+    var loginBtn = document.getElementById('nav-login-btn');
+    if (loginBtn) { loginBtn.href = '/dashboard.html'; loginBtn.textContent = 'Dashboard'; }
+  }
+
+  gsap.from('#nav',        { opacity:0, y:-8,  duration:0.5, ease:'power2.out' });
+  gsap.from('.login-wrap', { opacity:0, y:20,  duration:0.55, delay:0.15, ease:'power2.out' });
+
+  var logo = document.getElementById('nav-logo-img');
+  if (logo) {
+    logo.addEventListener('mouseenter', function() {
+      gsap.fromTo(logo, { rotate:0 },
+        { keyframes:{ rotate:[0,-9,9,-4,4,0] }, duration:0.52, ease:'power2.inOut' });
+    });
+  }
+
+  var form    = document.getElementById('login-form');
+  var card    = document.getElementById('login-card');
+  var errBox  = document.getElementById('login-error');
+  var sucBox  = document.getElementById('login-success');
+  var btn     = document.getElementById('login-submit');
+
+  // Focus styles
+  document.querySelectorAll('#login-form input[type="text"], #login-form input[type="password"]').forEach(function(el) {
+    el.addEventListener('focus', function() {
+      el.style.borderColor = 'var(--accent)';
+      el.style.boxShadow   = '0 0 0 3px rgba(123,63,160,0.1)';
+    });
+    el.addEventListener('blur', function() {
+      el.style.borderColor = '';
+      el.style.boxShadow   = '';
+    });
+  });
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var user = document.getElementById('l-user').value.trim();
+    var pass = document.getElementById('l-pass').value;
+
+    errBox.style.display = 'none';
+
+    if (!user || !pass) {
+      gsap.fromTo(card, { x:0 }, { keyframes:{ x:[-7,7,-5,5,0] }, duration:0.38, ease:'power2.inOut' });
+      return;
+    }
+
+    btn.disabled    = true;
+    btn.textContent = 'Signing in\u2026';
+
+    // Simulate auth check — replace with real backend call
+    setTimeout(function() {
+      sessionStorage.setItem('gca_logged_in', '1');
+      sucBox.style.display = 'block';
+      gsap.from(sucBox, { opacity:0, y:6, duration:0.35, ease:'power2.out' });
+      form.style.display = 'none';
+      setTimeout(function() { window.location.href = '/dashboard.html'; }, 1200);
+    }, 1000);
+  });
+})();
+</script>
+</body>
+</html>

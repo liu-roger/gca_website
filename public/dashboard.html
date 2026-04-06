@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Member Dashboard — Global Communication Association</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .dash-layout {
+      min-height: 100vh;
+      padding-top: 72px;
+      background: var(--bg);
+      display: grid;
+      grid-template-columns: 240px 1fr;
+    }
+
+    /* Sidebar */
+    .dash-sidebar {
+      border-right: 1px solid var(--border);
+      background: var(--white);
+      padding: 2rem 1.2rem;
+      position: sticky;
+      top: 72px;
+      height: calc(100vh - 72px);
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .sidebar-label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--fg-subtle);
+      padding: 0 0.75rem;
+      margin-bottom: 0.4rem;
+      margin-top: 1rem;
+    }
+
+    .sidebar-label:first-child { margin-top: 0; }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.55rem 0.75rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--fg-muted);
+      text-decoration: none;
+      border-radius: var(--r);
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .sidebar-link:hover { background: var(--surface); color: var(--fg); }
+    .sidebar-link.active { background: var(--accent-dim); color: var(--accent); font-weight: 600; }
+    .sidebar-link .icon { font-size: 0.95rem; width: 18px; text-align: center; flex-shrink: 0; }
+
+    .sidebar-spacer { flex: 1; }
+
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      background: var(--bg);
+    }
+
+    .sidebar-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .sidebar-user-name { font-size: 0.78rem; font-weight: 600; color: var(--fg); }
+    .sidebar-user-role { font-size: 0.68rem; color: var(--fg-subtle); margin-top: 1px; }
+
+    /* Main */
+    .dash-main { padding: 2.5rem 3rem; }
+
+    .dash-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dash-header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.03em; color: var(--fg); margin-bottom: 0.2rem; }
+    .dash-header p  { font-size: 0.82rem; color: var(--fg-muted); }
+
+    /* New post form */
+    .post-form {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+
+    .post-form-header {
+      padding: 1.2rem 1.6rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .post-form-header h2 { font-size: 0.9rem; font-weight: 700; color: var(--fg); }
+    .post-form-header p  { font-size: 0.75rem; color: var(--fg-subtle); margin-top: 2px; }
+
+    .post-form-body { padding: 1.6rem; display: flex; flex-direction: column; gap: 1rem; }
+
+    .field label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--fg-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 10px 13px;
+      font-size: 0.85rem;
+      font-family: var(--ff);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      background: var(--bg);
+      color: var(--fg);
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(123,63,160,0.1);
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder { color: var(--fg-subtle); }
+
+    .field select { appearance: none; cursor: pointer; }
+
+    .field textarea { resize: vertical; line-height: 1.65; }
+
+    .field-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .char-count { font-size: 0.68rem; color: var(--fg-subtle); text-align: right; margin-top: 4px; }
+
+    .post-form-footer {
+      padding: 1.2rem 1.6rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .post-form-footer p { font-size: 0.75rem; color: var(--fg-subtle); }
+
+    /* Success state */
+    .post-success {
+      display: none;
+      margin: 0 1.6rem 1.6rem;
+      padding: 1rem 1.2rem;
+      border: 1px solid rgba(123,63,160,0.25);
+      border-radius: var(--r);
+      background: var(--accent-dim);
+    }
+
+    .post-success p:first-child { font-size: 0.85rem; font-weight: 700; color: var(--accent); margin-bottom: 3px; }
+    .post-success p:last-child  { font-size: 0.78rem; color: var(--fg-muted); }
+
+    /* Recent posts */
+    .recent-section { margin-top: 2.5rem; }
+    .recent-section h3 { font-size: 0.85rem; font-weight: 700; color: var(--fg); margin-bottom: 1rem; }
+
+    .recent-empty {
+      padding: 2rem;
+      text-align: center;
+      border: 1px dashed var(--border);
+      border-radius: var(--r);
+      font-size: 0.8rem;
+      color: var(--fg-subtle);
+    }
+
+    .recent-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .recent-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      background: var(--white);
+    }
+
+    .recent-item-title { font-size: 0.83rem; font-weight: 600; color: var(--fg); margin-bottom: 2px; }
+    .recent-item-meta  { font-size: 0.7rem; color: var(--fg-subtle); }
+    .recent-item-tag   {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); background: var(--accent-dim); border: 1px solid var(--accent-mid);
+      padding: 2px 8px; border-radius: 100px; flex-shrink: 0;
+    }
+    .recent-item-right { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+    .delete-btn {
+      padding: 4px 10px; font-size: 0.68rem; font-weight: 600; font-family: var(--ff);
+      border: 1px solid var(--border); border-radius: var(--r); background: var(--white);
+      color: var(--fg-subtle); cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .delete-btn:hover { background: #fef2f2; border-color: #fca5a5; color: #b91c1c; }
+    .delete-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .app-card {
+      border: 1px solid var(--border); border-radius: var(--r); background: var(--white);
+      padding: 1.4rem 1.6rem; margin-bottom: 0.75rem;
+    }
+    .app-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.9rem; }
+    .app-name { font-size: 0.95rem; font-weight: 700; color: var(--fg); }
+    .app-date { font-size: 0.7rem; color: var(--fg-subtle); }
+    .app-status {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 100px;
+      color: var(--accent); background: var(--accent-dim); border: 1px solid var(--accent-mid);
+    }
+    .app-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 2rem; }
+    .app-field-label { font-size: 0.68rem; font-weight: 600; color: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+    .app-field-value { font-size: 0.82rem; color: var(--fg-muted); }
+    .app-why { margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid var(--border); }
+    .app-why .app-field-label { margin-bottom: 4px; }
+    .app-why .app-field-value { line-height: 1.6; }
+
+    @media (max-width: 900px) {
+      .dash-layout { grid-template-columns: 1fr; }
+      .dash-sidebar { display: none; }
+      .dash-main { padding: 1.5rem; }
+      .field-row-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo" aria-label="GCA Home">
+      <img src="/brand_assets/GCA Logo.png" alt="GCA Logo" id="nav-logo-img" />
+      <span class="nav-logo-name">Global Communication<br>Association</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li class="nav-dropdown">
+        <span class="nav-dropdown-toggle">About</span>
+        <div class="nav-dropdown-menu">
+          <a href="/#about">About GCA</a>
+          <a href="/#pillars">Pillars</a>
+          <a href="/#programs">Programs</a>
+          <a href="/#community">Community</a>
+        </div>
+      </li>
+      <li><a href="/#join">Join GCA</a></li>
+      <li><a href="/events.html">Events</a></li>
+    </ul>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a href="/members.html" class="btn btn-sm btn-outline" style="border-color:var(--accent);color:var(--accent)">Login</a>
+      <a href="/#join" class="btn btn-sm btn-primary">Join GCA</a>
+    </div>
+  </div>
+</nav>
+
+<div class="dash-layout">
+
+  <!-- Sidebar -->
+  <aside class="dash-sidebar">
+    <p class="sidebar-label">Dashboard</p>
+    <a href="#" class="sidebar-link active" id="tab-posts-btn"><span class="icon">&#9998;</span> New Post</a>
+    <a href="#" class="sidebar-link" id="tab-apps-btn"><span class="icon">&#128506;</span> Applications</a>
+    <a href="/events.html" class="sidebar-link"><span class="icon">&#128240;</span> View Events</a>
+
+    <p class="sidebar-label">Account</p>
+    <a href="#" class="sidebar-link"><span class="icon">&#128100;</span> Profile</a>
+    <a href="/members.html" class="sidebar-link" id="sign-out-btn"><span class="icon">&#8594;</span> Sign Out</a>
+
+    <div class="sidebar-spacer"></div>
+
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">M</div>
+      <div>
+        <p class="sidebar-user-name">GCA Member</p>
+        <p class="sidebar-user-role">Professional</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="dash-main" id="dash-main">
+    <div class="dash-header">
+      <div>
+        <h1>Member Dashboard</h1>
+        <p>Welcome back. Publish a new blog post below.</p>
+      </div>
+      <a href="/events.html" class="btn btn-sm btn-outline">View Live Events &#8599;</a>
+    </div>
+
+    <!-- New post form -->
+    <div class="post-form" id="post-form-card">
+      <div class="post-form-header">
+        <div>
+          <h2>New Blog Post</h2>
+          <p>Your post will appear on the GCA blog immediately after publishing.</p>
+        </div>
+      </div>
+
+      <form id="post-form" novalidate>
+        <div class="post-form-body">
+          <div class="field">
+            <label for="p-title">Post title <span style="color:var(--accent)">*</span></label>
+            <input id="p-title" type="text" placeholder="e.g. Reflections from the 2026 World Congress" maxlength="120" />
+            <p class="char-count"><span id="title-count">0</span> / 120</p>
+          </div>
+
+          <div class="field-row-2">
+            <div class="field">
+              <label for="p-category">Category <span style="color:var(--accent)">*</span></label>
+              <select id="p-category">
+                <option value="" disabled selected>Select one&hellip;</option>
+                <option value="congress">World Congress</option>
+                <option value="fellowships">Fellowships</option>
+                <option value="research">Research</option>
+                <option value="community">Community</option>
+                <option value="awards">Awards</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="p-author">Author name <span style="color:var(--accent)">*</span></label>
+              <input id="p-author" type="text" placeholder="Your name or team" maxlength="60" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="p-excerpt">Excerpt <span style="color:var(--accent)">*</span> <span style="font-weight:400;color:var(--fg-subtle)">&mdash; shown on the blog index (1–2 sentences)</span></label>
+            <textarea id="p-excerpt" rows="2" placeholder="A short summary that draws readers in&hellip;" maxlength="300"></textarea>
+            <p class="char-count"><span id="excerpt-count">0</span> / 300</p>
+          </div>
+
+          <div class="field">
+            <label for="p-content">Full content <span style="color:var(--accent)">*</span></label>
+            <textarea id="p-content" rows="12" placeholder="Write your full post here. Plain text or basic HTML is supported."></textarea>
+          </div>
+        </div>
+
+        <div class="post-success" id="post-success">
+          <p>Post published!</p>
+          <p>Your post is now live on the GCA events page. <a href="/events.html" style="color:var(--accent);font-weight:600">View it here &rarr;</a></p>
+        </div>
+
+        <div class="post-form-footer">
+          <p>Fields marked <span style="color:var(--accent);font-weight:700">*</span> are required.</p>
+          <button type="submit" class="btn btn-primary btn-md" id="post-submit">Publish Post</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Recent posts by this member -->
+    <div class="recent-section">
+      <h3>Recently Published</h3>
+      <div id="recent-list"><div class="recent-empty">No posts yet. Publish your first post above.</div></div>
+    </div>
+  </main>
+
+  <!-- Applications panel (hidden by default) -->
+  <main class="dash-main" id="panel-apps" style="display:none">
+    <div class="dash-header">
+      <div>
+        <h1>Applications</h1>
+        <p>Membership applications submitted through the website.</p>
+      </div>
+    </div>
+
+    <div id="apps-list">
+      <div class="recent-empty">Loading&hellip;</div>
+    </div>
+  </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script>
+(function () {
+  gsap.from('#nav',       { opacity:0, y:-8,  duration:0.5,  ease:'power2.out' });
+  gsap.from('#dash-main', { opacity:0, y:12,  duration:0.5,  delay:0.15, ease:'power2.out' });
+
+  // ── Tab switching ─────────────────────────────────────────────────────────
+  var panelPosts = document.getElementById('dash-main');
+  var panelApps  = document.getElementById('panel-apps');
+  var tabPosts   = document.getElementById('tab-posts-btn');
+  var tabApps    = document.getElementById('tab-apps-btn');
+
+  function showPosts() {
+    panelPosts.style.display = '';
+    panelApps.style.display  = 'none';
+    tabPosts.classList.add('active');
+    tabApps.classList.remove('active');
+  }
+
+  function showApps() {
+    panelPosts.style.display = 'none';
+    panelApps.style.display  = '';
+    tabApps.classList.add('active');
+    tabPosts.classList.remove('active');
+    loadApplications();
+    gsap.from(panelApps, { opacity:0, y:10, duration:0.35, ease:'power2.out' });
+  }
+
+  tabPosts.addEventListener('click', function(e) { e.preventDefault(); showPosts(); });
+  tabApps.addEventListener('click',  function(e) { e.preventDefault(); showApps(); });
+
+  // ── Load applications ─────────────────────────────────────────────────────
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function loadApplications() {
+    var list = document.getElementById('apps-list');
+    list.innerHTML = '<div class="recent-empty">Loading&hellip;</div>';
+    fetch('/api/applications')
+      .then(function(r) { return r.json(); })
+      .then(function(apps) {
+        if (!apps.length) {
+          list.innerHTML = '<div class="recent-empty">No applications yet.</div>';
+          return;
+        }
+        list.innerHTML = '';
+        apps.forEach(function(a) {
+          var card = document.createElement('div');
+          card.className = 'app-card';
+          card.innerHTML =
+            '<div class="app-card-header">' +
+              '<div>' +
+                '<p class="app-name">' + escHtml(a.firstName) + ' ' + escHtml(a.lastName) + '</p>' +
+                '<p class="app-date">Submitted ' + escHtml(a.submittedAt) + '</p>' +
+              '</div>' +
+              '<span class="app-status">' + escHtml(a.status) + '</span>' +
+            '</div>' +
+            '<div class="app-fields">' +
+              '<div><p class="app-field-label">Email</p><p class="app-field-value">' + escHtml(a.email) + '</p></div>' +
+              '<div><p class="app-field-label">Role</p><p class="app-field-value">' + escHtml(a.role || '—') + '</p></div>' +
+              '<div><p class="app-field-label">Organization</p><p class="app-field-value">' + escHtml(a.org || '—') + '</p></div>' +
+            '</div>' +
+            (a.why ? '<div class="app-why"><p class="app-field-label">Why they want to join</p><p class="app-field-value">' + escHtml(a.why) + '</p></div>' : '');
+          list.appendChild(card);
+          gsap.from(card, { opacity:0, y:10, duration:0.3, ease:'power2.out', delay: apps.indexOf(a) * 0.05 });
+        });
+      })
+      .catch(function() {
+        list.innerHTML = '<div class="recent-empty">Failed to load applications.</div>';
+      });
+  }
+
+  var signOut = document.getElementById('sign-out-btn');
+  if (signOut) {
+    signOut.addEventListener('click', function() {
+      sessionStorage.removeItem('gca_logged_in');
+    });
+  }
+
+  var logo = document.getElementById('nav-logo-img');
+  if (logo) {
+    logo.addEventListener('mouseenter', function() {
+      gsap.fromTo(logo, { rotate:0 },
+        { keyframes:{ rotate:[0,-9,9,-4,4,0] }, duration:0.52, ease:'power2.inOut' });
+    });
+  }
+
+  // Character counters
+  function bindCounter(inputId, countId) {
+    var el = document.getElementById(inputId);
+    var ct = document.getElementById(countId);
+    if (!el || !ct) return;
+    el.addEventListener('input', function() { ct.textContent = el.value.length; });
+  }
+  bindCounter('p-title',   'title-count');
+  bindCounter('p-excerpt', 'excerpt-count');
+
+  // Focus styles
+  document.querySelectorAll('#post-form input, #post-form select, #post-form textarea').forEach(function(el) {
+    el.addEventListener('focus', function() { el.style.borderColor = 'var(--accent)'; el.style.boxShadow = '0 0 0 3px rgba(123,63,160,0.1)'; });
+    el.addEventListener('blur',  function() { el.style.borderColor = ''; el.style.boxShadow = ''; });
+  });
+
+  // Load and render existing posts
+  function loadRecent() {
+    fetch('/api/posts')
+      .then(function(r) { return r.json(); })
+      .then(function(posts) {
+        var list = document.getElementById('recent-list');
+        if (!posts.length) {
+          list.innerHTML = '<div class="recent-empty">No posts yet. Publish your first post above.</div>';
+          return;
+        }
+        list.innerHTML = '';
+        var ul = document.createElement('div');
+        ul.className = 'recent-list';
+        posts.slice(0, 10).forEach(function(p) {
+          var item = document.createElement('div');
+          item.className = 'recent-item';
+          item.dataset.id = p.id;
+          item.innerHTML =
+            '<div>' +
+              '<p class="recent-item-title">' + escHtml(p.title) + '</p>' +
+              '<p class="recent-item-meta">' + escHtml(p.date) + ' &middot; ' + escHtml(p.readTime) + ' &middot; by ' + escHtml(p.author) + '</p>' +
+            '</div>' +
+            '<div class="recent-item-right">' +
+              '<span class="recent-item-tag">' + escHtml(p.category) + '</span>' +
+              '<button class="delete-btn" data-id="' + p.id + '">Delete</button>' +
+            '</div>';
+          ul.appendChild(item);
+        });
+        list.appendChild(ul);
+
+        // Wire delete buttons
+        ul.querySelectorAll('.delete-btn').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var id = btn.dataset.id;
+            if (!confirm('Delete this post? This cannot be undone.')) return;
+            btn.disabled    = true;
+            btn.textContent = 'Deleting\u2026';
+            fetch('/api/posts/' + id, { method: 'DELETE' })
+              .then(function(r) { return r.json(); })
+              .then(function() {
+                var item = ul.querySelector('[data-id="' + id + '"]');
+                gsap.to(item, { opacity:0, x:-12, duration:0.25, ease:'power2.in', onComplete: function() {
+                  item.remove();
+                  if (!ul.children.length) {
+                    list.innerHTML = '<div class="recent-empty">No posts yet. Publish your first post above.</div>';
+                  }
+                }});
+              })
+              .catch(function() {
+                btn.disabled    = false;
+                btn.textContent = 'Delete';
+                alert('Failed to delete. Please try again.');
+              });
+          });
+        });
+      })
+      .catch(function() {});
+  }
+
+  loadRecent();
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // Form submit
+  var form    = document.getElementById('post-form');
+  var card    = document.getElementById('post-form-card');
+  var btn     = document.getElementById('post-submit');
+  var success = document.getElementById('post-success');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    var title    = document.getElementById('p-title').value.trim();
+    var category = document.getElementById('p-category').value;
+    var author   = document.getElementById('p-author').value.trim();
+    var excerpt  = document.getElementById('p-excerpt').value.trim();
+    var content  = document.getElementById('p-content').value.trim();
+
+    if (!title || !category || !author || !excerpt || !content) {
+      gsap.fromTo(card, { x:0 }, { keyframes:{ x:[-6,6,-4,4,0] }, duration:0.35, ease:'power2.inOut' });
+      return;
+    }
+
+    btn.disabled    = true;
+    btn.textContent = 'Publishing\u2026';
+
+    fetch('/api/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title:title, category:category, author:author, excerpt:excerpt, content:content }),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(post) {
+      success.style.display = 'block';
+      gsap.from(success, { opacity:0, y:6, duration:0.4, ease:'power2.out' });
+      btn.style.display = 'none';
+      // Reset fields
+      form.querySelectorAll('input, textarea').forEach(function(el) { el.value = ''; });
+      document.getElementById('p-category').selectedIndex = 0;
+      document.getElementById('title-count').textContent   = '0';
+      document.getElementById('excerpt-count').textContent = '0';
+      loadRecent();
+      // Hide success after 5s and re-enable
+      setTimeout(function() {
+        success.style.display = 'none';
+        btn.style.display     = '';
+        btn.disabled          = false;
+        btn.textContent       = 'Publish Post';
+      }, 5000);
+    })
+    .catch(function() {
+      btn.disabled    = false;
+      btn.textContent = 'Publish Post';
+      alert('Something went wrong. Please try again.');
+    });
+  });
+})();
+</script>
+</body>
+</html>

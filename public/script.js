@@ -1,4 +1,10 @@
 (function () {
+  // Update Login button if logged in
+  if (sessionStorage.getItem('gca_logged_in')) {
+    var loginBtn = document.getElementById('nav-login-btn');
+    if (loginBtn) { loginBtn.href = '/dashboard.html'; loginBtn.textContent = 'Dashboard'; }
+  }
+
   gsap.registerPlugin(ScrollTrigger);
 
   gsap.from('#nav',         { opacity:0, y:-8,  duration:0.5,  ease:'power2.out' });
@@ -146,4 +152,52 @@
     requestAnimationFrame(draw);
   }
   setTimeout(function(){requestAnimationFrame(draw);},300);
+
+  // Input focus styles
+  document.querySelectorAll('#apply-form input, #apply-form select, #apply-form textarea').forEach(function(el) {
+    el.addEventListener('focus', function() { el.style.borderColor = 'var(--accent)'; el.style.boxShadow = '0 0 0 3px rgba(123,63,160,0.1)'; });
+    el.addEventListener('blur',  function() { el.style.borderColor = ''; el.style.boxShadow = ''; });
+  });
+
+  // Application form submit
+  var form    = document.getElementById('apply-form');
+  var btn     = document.getElementById('apply-submit');
+  var success = document.getElementById('apply-success');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var first = document.getElementById('f-first').value.trim();
+      var last  = document.getElementById('f-last').value.trim();
+      var email = document.getElementById('f-email').value.trim();
+      if (!first || !last || !email) {
+        gsap.fromTo(form, { x:0 }, { keyframes:{ x:[-6,6,-4,4,0] }, duration:0.35, ease:'power2.inOut' });
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Submitting\u2026';
+      fetch('/api/applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: first,
+          lastName:  last,
+          email:     email,
+          org:       (document.getElementById('f-org')  || {}).value || '',
+          role:      (document.getElementById('f-role') || {}).value || '',
+          why:       (document.getElementById('f-why')  || {}).value || '',
+        }),
+      })
+      .then(function() {
+        form.querySelectorAll('input, select, textarea').forEach(function(el) { el.disabled = true; });
+        btn.style.display = 'none';
+        success.style.display = 'block';
+        gsap.from(success, { opacity:0, y:6, duration:0.4, ease:'power2.out' });
+      })
+      .catch(function() {
+        btn.disabled = false;
+        btn.textContent = 'Submit Application';
+        alert('Something went wrong. Please try again.');
+      });
+    });
+  }
 })();
