@@ -332,6 +332,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script src="/api/firebase-config"></script>
 <script type="module">
   import { initializeApp }                        from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js';
   import { getAnalytics }                         from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-analytics.js';
@@ -339,17 +340,7 @@
            signInWithEmailAndPassword,
            sendPasswordResetEmail }               from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
 
-  const firebaseConfig = {
-    apiKey:            'AIzaSyAIdBwKl4n36r36-nssln6giXwu2ahMxGc',
-    authDomain:        'gca-website-3c221.firebaseapp.com',
-    projectId:         'gca-website-3c221',
-    storageBucket:     'gca-website-3c221.firebasestorage.app',
-    messagingSenderId: '674744602737',
-    appId:             '1:674744602737:web:d53696961cfdc5739b4bd0',
-    measurementId:     'G-M9B971F098',
-  };
-
-  const app       = initializeApp(firebaseConfig);
+  const app       = initializeApp(window.firebaseConfig);
   const analytics = getAnalytics(app);
   const auth      = getAuth(app);
 

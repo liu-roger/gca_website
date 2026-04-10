@@ -11,7 +11,9 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:3000/)",
       "Bash(python3 -c \"import selenium\")",
       "Bash(lsof -ti:3000)",
-      "Bash(xargs kill:*)"
+      "Bash(xargs kill:*)",
+      "Bash(npm install:*)",
+      "Bash(node /Users/rogerliu/Documents/gca_website/index.js)"
     ]
   }
 }

@@ -1,0 +1,10 @@
+{
+  "rewrites": [
+    { "source": "/api/firebase-config", "destination": "/api/firebase-config.js" },
+    { "source": "/api/posts/:id",        "destination": "/api/posts/[id].js" },
+    { "source": "/api/posts",            "destination": "/api/posts.js" },
+    { "source": "/api/applications/:id", "destination": "/api/applications/[id].js" },
+    { "source": "/api/applications",     "destination": "/api/applications.js" },
+    { "source": "/(.*)",                 "destination": "/public/$1" }
+  ]
+}

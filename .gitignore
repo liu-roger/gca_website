@@ -1,4 +1,6 @@
 # .gitignore
 node_modules/
 .env
-temporary_screenshots
+temporary_screenshots/
+data/
+public/uploads/
