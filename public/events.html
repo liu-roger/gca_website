@@ -191,6 +191,9 @@
       </div>
       <button class="modal-close" id="modal-close" aria-label="Close">&#10005;</button>
     </div>
+    <div id="modal-image-wrap" style="display:none;border-bottom:1px solid var(--border);background:#f4f4f5">
+      <img id="modal-image" style="width:100%;height:auto;display:block;" alt="" />
+    </div>
     <div class="modal-meta">
       <span id="modal-date"></span>
       <span class="post-sep"></span>
@@ -202,7 +205,10 @@
         <div class="modal-avatar" id="modal-avatar"></div>
         <span class="modal-author-name" id="modal-author"></span>
       </div>
-      <button class="btn btn-sm btn-outline modal-close" id="modal-close-foot">Close</button>
+      <div style="display:flex;gap:0.5rem;align-items:center">
+        <a id="modal-edit-btn" href="#" class="btn btn-sm btn-outline" style="display:none;text-decoration:none">Edit Post</a>
+        <button class="btn btn-sm btn-outline js-close-modal" id="modal-close-foot">Close</button>
+      </div>
     </div>
   </div>
 </div>
@@ -275,24 +281,69 @@
 
   // ── Modal ──────────────────────────────────────────────────────────────────
   var backdrop   = document.getElementById('modal-backdrop');
-  var modalClose = document.querySelectorAll('.modal-close');
+  var modalClose = document.querySelectorAll('.modal-close, .js-close-modal');
+
+  function renderBlocks(el) {
+    // New-style: blocks array stored as JSON
+    if (el.dataset.blocks) {
+      var blocks;
+      try { blocks = JSON.parse(el.dataset.blocks); } catch(e) { blocks = null; }
+      if (blocks && blocks.length) {
+        return blocks.map(function(b) {
+          if (b.type === 'text') {
+            return b.content.split(/\n\n+/).map(function(para) {
+              return '<p style="margin-bottom:1rem;line-height:1.75;font-size:0.88rem;color:var(--fg)">' +
+                escHtml(para.trim()).replace(/\n/g, '<br>') + '</p>';
+            }).join('');
+          }
+          if (b.type === 'image') {
+            return '<div style="margin:1.6rem 0;text-align:center">' +
+              '<img src="' + escHtml(b.src) + '" ' +
+              'style="max-width:100%;width:100%;border-radius:6px;object-fit:contain;background:#f4f4f5;display:block" />' +
+              '</div>';
+          }
+          return '';
+        }).join('');
+      }
+    }
+    // Legacy: plain content string
+    var raw = el.dataset.content || '';
+    return raw.split(/\n\n+/).map(function(p) {
+      return '<p style="margin-bottom:1rem;line-height:1.75;font-size:0.88rem">' + escHtml(p.trim()) + '</p>';
+    }).join('');
+  }
 
   function openModal(el) {
-    var raw = el.dataset.content || '';
-    // Split on double newlines into paragraphs
-    var paragraphs = raw.split(/\n\n+/).map(function(p) { return p.trim(); }).filter(Boolean);
-    var html = paragraphs.map(function(p) { return '<p>' + p + '</p>'; }).join('');
-
     document.getElementById('modal-tag').textContent        = el.dataset.category || '';
     document.getElementById('modal-title-text').innerHTML   = el.dataset.title    || '';
     document.getElementById('modal-date').textContent       = el.dataset.date     || '';
     document.getElementById('modal-read').textContent       = el.dataset.read     || '';
-    document.getElementById('modal-body').innerHTML         = html;
+    document.getElementById('modal-body').innerHTML         = renderBlocks(el);
+
+    // Cover image
+    var imageWrap = document.getElementById('modal-image-wrap');
+    var modalImg  = document.getElementById('modal-image');
+    if (el.dataset.image) {
+      modalImg.src = el.dataset.image;
+      imageWrap.style.display = 'block';
+    } else {
+      imageWrap.style.display = 'none';
+      modalImg.src = '';
+    }
     var author = el.dataset.author || '';
     // Strip HTML entities for avatar initial
     var authorClean = author.replace(/&amp;/g,'&').replace(/&[a-z]+;/g,'');
     document.getElementById('modal-avatar').textContent     = authorClean.charAt(0).toUpperCase();
     document.getElementById('modal-author').innerHTML       = author;
+
+    // Edit button — only when logged in
+    var editBtn = document.getElementById('modal-edit-btn');
+    if (sessionStorage.getItem('gca_logged_in') && el.dataset.id) {
+      editBtn.href = '/dashboard.html?edit=' + el.dataset.id;
+      editBtn.style.display = '';
+    } else {
+      editBtn.style.display = 'none';
+    }
 
     backdrop.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -318,15 +369,21 @@
   function makeCard(p) {
     var el = document.createElement('div');
     el.className = 'post-card dynamic-card';
+    el.dataset.id       = p.id;
     el.dataset.category = p.category;
     el.dataset.title    = p.title;
     el.dataset.date     = p.date;
     el.dataset.read     = p.readTime;
     el.dataset.author   = p.author;
-    el.dataset.content  = p.content;
+    if (p.content) el.dataset.content = p.content;
+    if (p.image)   el.dataset.image   = p.image;
+    if (p.blocks && p.blocks.length) el.dataset.blocks = JSON.stringify(p.blocks);
+    var coverSrc = p.image
+      ? escHtml(p.image)
+      : 'https://placehold.co/600x338/f4f4f5/a1a1aa?text=' + encodeURIComponent(p.category);
     el.innerHTML =
       '<div class="post-img">' +
-        '<img src="https://placehold.co/600x338/f4f4f5/a1a1aa?text=' + encodeURIComponent(p.category) + '" alt="" />' +
+        '<img src="' + coverSrc + '" alt="" style="width:100%;height:100%;object-fit:contain;display:block;background:#f4f4f5" />' +
         '<span class="post-tag-overlay">' + escHtml(p.category) + '</span>' +
       '</div>' +
       '<div class="post-body">' +

@@ -177,6 +177,74 @@
 
     .post-form-footer p { font-size: 0.75rem; color: var(--fg-subtle); }
 
+    /* Block editor */
+    .block-item {
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      background: var(--bg);
+      overflow: hidden;
+    }
+    .block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .block-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--fg-subtle);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .block-remove {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.72rem;
+      color: var(--fg-subtle);
+      font-family: var(--ff);
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: background 0.12s ease, color 0.12s ease;
+    }
+    .block-remove:hover { background: #fef2f2; color: #b91c1c; }
+    .block-textarea {
+      width: 100%;
+      padding: 10px 13px;
+      font-size: 0.85rem;
+      font-family: var(--ff);
+      border: none;
+      background: var(--bg);
+      color: var(--fg);
+      outline: none;
+      resize: vertical;
+      line-height: 1.65;
+      box-sizing: border-box;
+    }
+    .block-img-area {
+      padding: 1.2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .block-img-area:hover { background: var(--accent-dim); }
+    .block-img-prompt {
+      font-size: 0.8rem;
+      color: var(--fg-muted);
+    }
+    .block-img-preview { padding: 0.5rem 0; }
+    .block-add-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
     /* Success state */
     .post-success {
       display: none;
@@ -223,14 +291,28 @@
       padding: 2px 8px; border-radius: 100px; flex-shrink: 0;
     }
     .recent-item-right { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
-    .delete-btn {
+    .delete-btn, .edit-btn {
       padding: 4px 10px; font-size: 0.68rem; font-weight: 600; font-family: var(--ff);
       border: 1px solid var(--border); border-radius: var(--r); background: var(--white);
       color: var(--fg-subtle); cursor: pointer;
       transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     }
+    .edit-btn:hover { background: var(--accent-dim); border-color: var(--accent-mid); color: var(--accent); }
+    .edit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .delete-btn:hover { background: #fef2f2; border-color: #fca5a5; color: #b91c1c; }
     .delete-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .edit-mode-banner {
+      display: none;
+      padding: 0.6rem 1rem;
+      background: var(--accent-dim);
+      border-bottom: 1px solid var(--accent-mid);
+      font-size: 0.78rem;
+      color: var(--accent);
+      font-weight: 600;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .edit-mode-banner.active { display: flex; }
 
     .app-card {
       border: 1px solid var(--border); border-radius: var(--r); background: var(--white);
@@ -244,12 +326,55 @@
       padding: 3px 10px; border-radius: 100px;
       color: var(--accent); background: var(--accent-dim); border: 1px solid var(--accent-mid);
     }
+    .app-status.accepted  { color: #16a34a; background: #f0fdf4; border-color: #bbf7d0; }
+    .app-status.rejected  { color: #dc2626; background: #fef2f2; border-color: #fecaca; }
+    .app-status.interview { color: #0369a1; background: #f0f9ff; border-color: #bae6fd; }
     .app-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 2rem; }
     .app-field-label { font-size: 0.68rem; font-weight: 600; color: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
     .app-field-value { font-size: 0.82rem; color: var(--fg-muted); }
     .app-why { margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid var(--border); }
     .app-why .app-field-label { margin-bottom: 4px; }
     .app-why .app-field-value { line-height: 1.6; }
+    .app-actions { display: flex; gap: 0.5rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); flex-wrap: wrap; }
+    .app-btn { padding: 5px 14px; font-size: 0.72rem; font-weight: 600; border-radius: var(--r); border: 1px solid var(--border); background: var(--white); color: var(--fg-muted); cursor: pointer; font-family: var(--ff); transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease; }
+    .app-btn:hover { background: var(--surface); border-color: var(--border-hi); color: var(--fg); }
+    .app-btn.accept  { background: #f0fdf4; border-color: #bbf7d0; color: #16a34a; }
+    .app-btn.accept:hover  { background: #dcfce7; }
+    .app-btn.reject  { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
+    .app-btn.reject:hover  { background: #fee2e2; }
+    .app-btn.interview { background: #f0f9ff; border-color: #bae6fd; color: #0369a1; }
+    .app-btn.interview:hover { background: #e0f2fe; }
+    .app-interview-date { font-size: 0.75rem; color: #0369a1; margin-top: 0.25rem; }
+
+    /* Interview scheduling modal */
+    .sched-backdrop {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(9,9,11,0.45); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+    }
+    .sched-backdrop.open { opacity: 1; pointer-events: all; }
+    .sched-modal {
+      background: var(--white); border: 1px solid var(--border); border-radius: 10px;
+      width: 100%; max-width: 400px; padding: 1.8rem;
+      transform: translateY(12px) scale(0.98);
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .sched-backdrop.open .sched-modal { transform: translateY(0) scale(1); }
+    .sched-modal h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; color: var(--fg); }
+    .sched-modal p  { font-size: 0.78rem; color: var(--fg-subtle); margin-bottom: 1.2rem; }
+    .sched-modal label { display: block; font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg-subtle); margin-bottom: 4px; }
+    .sched-modal input[type=datetime-local] {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--r);
+      font-size: 0.85rem; font-family: var(--ff); background: var(--white); color: var(--fg);
+      margin-bottom: 1.2rem; outline: none; transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .sched-modal input[type=datetime-local]:focus { border-color: #0369a1; box-shadow: 0 0 0 3px rgba(3,105,161,0.1); }
+    .sched-modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+    .sched-cancel { padding: 7px 16px; font-size: 0.78rem; font-weight: 600; border: 1px solid var(--border); border-radius: var(--r); background: var(--white); color: var(--fg-muted); cursor: pointer; font-family: var(--ff); transition: background 0.15s ease; }
+    .sched-cancel:hover { background: var(--surface); }
+    .sched-confirm { padding: 7px 16px; font-size: 0.78rem; font-weight: 600; border: none; border-radius: var(--r); background: #0369a1; color: #fff; cursor: pointer; font-family: var(--ff); transition: background 0.15s ease; }
+    .sched-confirm:hover { background: #0284c7; }
 
     @media (max-width: 900px) {
       .dash-layout { grid-template-columns: 1fr; }
@@ -323,10 +448,14 @@
 
     <!-- New post form -->
     <div class="post-form" id="post-form-card">
+      <div class="edit-mode-banner" id="edit-banner">
+        <span>&#9998; Editing existing post &mdash; changes will be saved immediately.</span>
+        <button type="button" id="cancel-edit-btn" style="background:none;border:none;cursor:pointer;font-size:0.75rem;color:var(--accent);font-family:var(--ff);font-weight:600;text-decoration:underline">Cancel &amp; New Post</button>
+      </div>
       <div class="post-form-header">
         <div>
-          <h2>New Blog Post</h2>
-          <p>Your post will appear on the GCA blog immediately after publishing.</p>
+          <h2 id="form-title-text">New Blog Post</h2>
+          <p id="form-sub-text">Your post will appear on the GCA blog immediately after publishing.</p>
         </div>
       </div>
 
@@ -363,8 +492,28 @@
           </div>
 
           <div class="field">
-            <label for="p-content">Full content <span style="color:var(--accent)">*</span></label>
-            <textarea id="p-content" rows="12" placeholder="Write your full post here. Plain text or basic HTML is supported."></textarea>
+            <label>Cover image <span style="font-weight:400;color:var(--fg-subtle)">&mdash; optional, shown as the card thumbnail</span></label>
+            <div id="upload-area" style="border:2px dashed var(--border);border-radius:var(--r);padding:1.4rem;text-align:center;cursor:pointer;transition:border-color 0.15s ease,background 0.15s ease;background:var(--bg)">
+              <input type="file" id="p-image" accept=".png,.jpg,.jpeg" style="display:none" />
+              <div id="upload-prompt">
+                <p style="font-size:0.82rem;color:var(--fg-muted);margin-bottom:0.3rem">Click to select or drag &amp; drop</p>
+                <p style="font-size:0.72rem;color:var(--fg-subtle)">PNG or JPEG &mdash; max 5MB</p>
+              </div>
+              <div id="upload-preview" style="display:none">
+                <img id="preview-img" style="max-height:140px;max-width:100%;border-radius:4px;display:block;margin:0 auto 0.6rem;object-fit:contain" />
+                <p id="preview-name" style="font-size:0.75rem;color:var(--fg-muted);margin-bottom:0.4rem"></p>
+                <button type="button" id="upload-clear" style="font-size:0.72rem;color:var(--fg-subtle);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:var(--ff)">Remove image</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Post content <span style="color:var(--accent)">*</span> <span style="font-weight:400;color:var(--fg-subtle)">&mdash; add text and image blocks in order</span></label>
+            <div id="blocks-container" style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:0.75rem"></div>
+            <div class="block-add-row">
+              <button type="button" id="add-text-btn" class="btn btn-sm btn-outline">&#43; Add Text</button>
+              <button type="button" id="add-image-btn" class="btn btn-sm btn-outline">&#43; Add Image</button>
+            </div>
           </div>
         </div>
 
@@ -403,6 +552,20 @@
 
 </div>
 
+<!-- Interview scheduling modal -->
+<div class="sched-backdrop" id="sched-backdrop">
+  <div class="sched-modal">
+    <h3>Schedule Interview</h3>
+    <p id="sched-applicant-name"></p>
+    <label for="sched-datetime">Date &amp; Time</label>
+    <input type="datetime-local" id="sched-datetime" />
+    <div class="sched-modal-actions">
+      <button class="sched-cancel" id="sched-cancel">Cancel</button>
+      <button class="sched-confirm" id="sched-confirm">Confirm</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
 <script>
 (function () {
@@ -439,6 +602,84 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
+  // ── Interview scheduling modal ─────────────────────────────────────────────
+  var schedBackdrop   = document.getElementById('sched-backdrop');
+  var schedDatetime   = document.getElementById('sched-datetime');
+  var schedName       = document.getElementById('sched-applicant-name');
+  var schedCancel     = document.getElementById('sched-cancel');
+  var schedConfirm    = document.getElementById('sched-confirm');
+  var schedCurrentId  = null;
+  var schedCurrentCard = null;
+
+  function openSchedModal(appId, name, card) {
+    schedCurrentId   = appId;
+    schedCurrentCard = card;
+    schedName.textContent = 'Scheduling for ' + name;
+    schedDatetime.value   = '';
+    schedBackdrop.classList.add('open');
+  }
+  function closeSchedModal() { schedBackdrop.classList.remove('open'); }
+
+  schedCancel.addEventListener('click', closeSchedModal);
+  schedBackdrop.addEventListener('click', function(e) { if (e.target === schedBackdrop) closeSchedModal(); });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSchedModal(); });
+
+  schedConfirm.addEventListener('click', function() {
+    var dt = schedDatetime.value;
+    if (!dt) { schedDatetime.focus(); return; }
+    var formatted = new Date(dt).toLocaleString('en-US', { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
+    patchApplication(schedCurrentId, { status: 'Interview Scheduled', interviewDate: formatted }, schedCurrentCard, function() {
+      closeSchedModal();
+    });
+  });
+
+  function patchApplication(id, data, card, onSuccess) {
+    fetch('/api/applications/' + id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(updated) {
+      updateCardUI(card, updated);
+      if (onSuccess) onSuccess();
+    })
+    .catch(function() { alert('Failed to update application. Please try again.'); });
+  }
+
+  function statusClass(status) {
+    if (status === 'Accepted')           return 'accepted';
+    if (status === 'Rejected')           return 'rejected';
+    if (status === 'Interview Scheduled') return 'interview';
+    return '';
+  }
+
+  function updateCardUI(card, a) {
+    var statusEl = card.querySelector('.app-status');
+    if (statusEl) {
+      statusEl.textContent  = a.status;
+      statusEl.className    = 'app-status ' + statusClass(a.status);
+    }
+    var dateEl = card.querySelector('.app-interview-date');
+    if (a.interviewDate) {
+      if (dateEl) {
+        dateEl.textContent = 'Interview: ' + a.interviewDate;
+      } else {
+        var d = document.createElement('p');
+        d.className   = 'app-interview-date';
+        d.textContent = 'Interview: ' + a.interviewDate;
+        card.querySelector('.app-card-header > div').appendChild(d);
+      }
+    }
+    // Disable accept/reject if finalised
+    var done = a.status === 'Accepted' || a.status === 'Rejected';
+    card.querySelectorAll('.app-btn.accept, .app-btn.reject').forEach(function(b) {
+      b.disabled = done;
+      b.style.opacity = done ? '0.4' : '';
+      b.style.cursor  = done ? 'default' : '';
+    });
+  }
+
   function loadApplications() {
     var list = document.getElementById('apps-list');
     list.innerHTML = '<div class="recent-empty">Loading&hellip;</div>';
@@ -450,25 +691,46 @@
           return;
         }
         list.innerHTML = '';
-        apps.forEach(function(a) {
+        apps.forEach(function(a, i) {
           var card = document.createElement('div');
           card.className = 'app-card';
+          var done = a.status === 'Accepted' || a.status === 'Rejected';
           card.innerHTML =
             '<div class="app-card-header">' +
               '<div>' +
                 '<p class="app-name">' + escHtml(a.firstName) + ' ' + escHtml(a.lastName) + '</p>' +
                 '<p class="app-date">Submitted ' + escHtml(a.submittedAt) + '</p>' +
+                (a.interviewDate ? '<p class="app-interview-date">Interview: ' + escHtml(a.interviewDate) + '</p>' : '') +
               '</div>' +
-              '<span class="app-status">' + escHtml(a.status) + '</span>' +
+              '<span class="app-status ' + statusClass(a.status) + '">' + escHtml(a.status) + '</span>' +
             '</div>' +
             '<div class="app-fields">' +
               '<div><p class="app-field-label">Email</p><p class="app-field-value">' + escHtml(a.email) + '</p></div>' +
               '<div><p class="app-field-label">Role</p><p class="app-field-value">' + escHtml(a.role || '—') + '</p></div>' +
               '<div><p class="app-field-label">Organization</p><p class="app-field-value">' + escHtml(a.org || '—') + '</p></div>' +
             '</div>' +
-            (a.why ? '<div class="app-why"><p class="app-field-label">Why they want to join</p><p class="app-field-value">' + escHtml(a.why) + '</p></div>' : '');
+            (a.why ? '<div class="app-why"><p class="app-field-label">Why they want to join</p><p class="app-field-value">' + escHtml(a.why) + '</p></div>' : '') +
+            '<div class="app-actions">' +
+              '<button class="app-btn accept"' + (done ? ' disabled style="opacity:0.4;cursor:default"' : '') + '>&#10003; Accept</button>' +
+              '<button class="app-btn reject"' + (done ? ' disabled style="opacity:0.4;cursor:default"' : '') + '>&#10007; Reject</button>' +
+              '<button class="app-btn interview">&#128197; Schedule Interview</button>' +
+            '</div>';
+
+          var fullName = a.firstName + ' ' + a.lastName;
+          card.querySelector('.app-btn.accept').addEventListener('click', function() {
+            if (this.disabled) return;
+            patchApplication(a.id, { status: 'Accepted' }, card, null);
+          });
+          card.querySelector('.app-btn.reject').addEventListener('click', function() {
+            if (this.disabled) return;
+            patchApplication(a.id, { status: 'Rejected' }, card, null);
+          });
+          card.querySelector('.app-btn.interview').addEventListener('click', function() {
+            openSchedModal(a.id, fullName, card);
+          });
+
           list.appendChild(card);
-          gsap.from(card, { opacity:0, y:10, duration:0.3, ease:'power2.out', delay: apps.indexOf(a) * 0.05 });
+          gsap.from(card, { opacity:0, y:10, duration:0.3, ease:'power2.out', delay: i * 0.05 });
         });
       })
       .catch(function() {
@@ -531,11 +793,15 @@
             '</div>' +
             '<div class="recent-item-right">' +
               '<span class="recent-item-tag">' + escHtml(p.category) + '</span>' +
+              '<button class="edit-btn" data-id="' + p.id + '">Edit</button>' +
               '<button class="delete-btn" data-id="' + p.id + '">Delete</button>' +
             '</div>';
           ul.appendChild(item);
         });
         list.appendChild(ul);
+
+        // Wire edit buttons
+        wireRecentButtons(ul);
 
         // Wire delete buttons
         ul.querySelectorAll('.delete-btn').forEach(function(btn) {
@@ -572,7 +838,355 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // Form submit
+  // ── Cover image upload ────────────────────────────────────────────────────
+  var uploadArea    = document.getElementById('upload-area');
+  var fileInput     = document.getElementById('p-image');
+  var uploadPrompt  = document.getElementById('upload-prompt');
+  var uploadPreview = document.getElementById('upload-preview');
+  var previewImg    = document.getElementById('preview-img');
+  var previewName   = document.getElementById('preview-name');
+  var uploadClear   = document.getElementById('upload-clear');
+  var coverData = null;
+  var coverExt  = null;
+
+  uploadArea.addEventListener('click', function(e) {
+    if (e.target !== uploadClear) fileInput.click();
+  });
+  uploadArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    uploadArea.style.borderColor = 'var(--accent)';
+    uploadArea.style.background  = 'var(--accent-dim)';
+  });
+  uploadArea.addEventListener('dragleave', function() {
+    uploadArea.style.borderColor = '';
+    uploadArea.style.background  = '';
+  });
+  uploadArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    uploadArea.style.borderColor = '';
+    uploadArea.style.background  = '';
+    if (e.dataTransfer.files[0]) loadCoverFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', function() {
+    if (fileInput.files[0]) loadCoverFile(fileInput.files[0]);
+  });
+  uploadClear.addEventListener('click', function(e) {
+    e.stopPropagation();
+    clearCover();
+  });
+
+  function loadCoverFile(file) {
+    if (!['image/png','image/jpeg'].includes(file.type)) { alert('Only PNG and JPEG files are supported.'); return; }
+    if (file.size > 5 * 1024 * 1024) { alert('File must be under 5MB.'); return; }
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var dataUrl = ev.target.result;
+      coverData = dataUrl.split(',')[1];
+      coverExt  = file.type === 'image/png' ? 'png' : 'jpeg';
+      previewImg.src = dataUrl;
+      previewName.textContent = file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)';
+      uploadPrompt.style.display  = 'none';
+      uploadPreview.style.display = 'block';
+      uploadArea.style.borderColor = 'var(--accent)';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearCover() {
+    coverData = null; coverExt = null;
+    fileInput.value = '';
+    previewImg.src  = '';
+    uploadPrompt.style.display  = 'block';
+    uploadPreview.style.display = 'none';
+    uploadArea.style.borderColor = '';
+  }
+
+  // ── Block editor ──────────────────────────────────────────────────────────
+  var blocksContainer = document.getElementById('blocks-container');
+
+  document.getElementById('add-text-btn').addEventListener('click', function() {
+    addTextBlock();
+  });
+  document.getElementById('add-image-btn').addEventListener('click', function() {
+    addImageBlock();
+  });
+
+  function addTextBlock() {
+    var div = document.createElement('div');
+    div.className = 'block-item';
+    div.dataset.type = 'text';
+    div.innerHTML =
+      '<div class="block-header">' +
+        '<span class="block-label">&#9776; Text block</span>' +
+        '<button type="button" class="block-remove">&#10005; Remove</button>' +
+      '</div>' +
+      '<textarea class="block-textarea" rows="5" placeholder="Write your paragraph or section here\u2026"></textarea>';
+    div.querySelector('.block-remove').addEventListener('click', function() { div.remove(); });
+    blocksContainer.appendChild(div);
+    div.querySelector('textarea').focus();
+  }
+
+  function addImageBlock() {
+    var div = document.createElement('div');
+    div.className = 'block-item';
+    div.dataset.type = 'image';
+    div.dataset.imgData = '';
+    div.dataset.imgExt  = '';
+
+    var hiddenInput = document.createElement('input');
+    hiddenInput.type    = 'file';
+    hiddenInput.accept  = '.png,.jpg,.jpeg';
+    hiddenInput.style.display = 'none';
+
+    div.innerHTML =
+      '<div class="block-header">' +
+        '<span class="block-label">&#128247; Image block</span>' +
+        '<button type="button" class="block-remove">&#10005; Remove</button>' +
+      '</div>' +
+      '<div class="block-img-area">' +
+        '<div class="block-img-prompt">Click to select an image (PNG or JPEG, max 5 MB)</div>' +
+        '<div class="block-img-preview" style="display:none">' +
+          '<img class="bpi" style="max-height:220px;max-width:100%;border-radius:4px;display:block;margin:0 auto 0.5rem;object-fit:contain" alt="" />' +
+          '<p class="bpn" style="font-size:0.72rem;color:var(--fg-muted);text-align:center;margin-bottom:0.4rem"></p>' +
+          '<button type="button" class="bpc" style="font-size:0.72rem;color:var(--accent);background:none;border:none;cursor:pointer;font-family:var(--ff);text-decoration:underline">Change image</button>' +
+        '</div>' +
+      '</div>';
+
+    div.appendChild(hiddenInput);
+
+    var imgArea   = div.querySelector('.block-img-area');
+    var prompt    = div.querySelector('.block-img-prompt');
+    var preview   = div.querySelector('.block-img-preview');
+    var pImg      = div.querySelector('.bpi');
+    var pName     = div.querySelector('.bpn');
+    var changeBtn = div.querySelector('.bpc');
+
+    div.querySelector('.block-remove').addEventListener('click', function() { div.remove(); });
+
+    imgArea.addEventListener('click', function(e) {
+      if (e.target !== changeBtn) hiddenInput.click();
+    });
+    changeBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      hiddenInput.click();
+    });
+    hiddenInput.addEventListener('change', function() {
+      if (hiddenInput.files[0]) loadBlockImg(hiddenInput.files[0]);
+    });
+
+    // Drag-and-drop onto image block
+    imgArea.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      imgArea.style.background = 'var(--accent-dim)';
+    });
+    imgArea.addEventListener('dragleave', function() { imgArea.style.background = ''; });
+    imgArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      imgArea.style.background = '';
+      if (e.dataTransfer.files[0]) loadBlockImg(e.dataTransfer.files[0]);
+    });
+
+    function loadBlockImg(file) {
+      if (!['image/png','image/jpeg'].includes(file.type)) { alert('Only PNG and JPEG files are supported.'); return; }
+      if (file.size > 5 * 1024 * 1024) { alert('File must be under 5MB.'); return; }
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var dataUrl = ev.target.result;
+        div.dataset.imgData = dataUrl.split(',')[1];
+        div.dataset.imgExt  = file.type === 'image/png' ? 'png' : 'jpeg';
+        pImg.src  = dataUrl;
+        pName.textContent = file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)';
+        prompt.style.display  = 'none';
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    blocksContainer.appendChild(div);
+  }
+
+  function collectBlocks() {
+    var blocks = [];
+    blocksContainer.querySelectorAll('.block-item').forEach(function(b) {
+      if (b.dataset.type === 'text') {
+        var ta = b.querySelector('.block-textarea');
+        var c  = ta ? ta.value.trim() : '';
+        if (c) blocks.push({ type: 'text', content: c });
+      } else if (b.dataset.type === 'image') {
+        if (b.dataset.imgData && b.dataset.imgExt) {
+          blocks.push({ type: 'image', data: b.dataset.imgData, ext: b.dataset.imgExt });
+        }
+      }
+    });
+    return blocks;
+  }
+
+  // ── Edit mode ──────────────────────────────────────────────────────────────
+  var editingId  = null;  // null = new post mode, number = editing that post id
+  var editBanner = document.getElementById('edit-banner');
+  var formTitle  = document.getElementById('form-title-text');
+  var formSub    = document.getElementById('form-sub-text');
+
+  function enterEditMode(post) {
+    editingId = post.id;
+    editBanner.classList.add('active');
+    formTitle.textContent = 'Edit Post';
+    formSub.textContent   = 'Changes are saved immediately.';
+    document.getElementById('post-submit').textContent = 'Save Changes';
+
+    // Pre-fill fields
+    document.getElementById('p-title').value   = post.title   || '';
+    document.getElementById('p-author').value  = post.author  || '';
+    document.getElementById('p-excerpt').value = post.excerpt || '';
+    document.getElementById('title-count').textContent   = (post.title   || '').length;
+    document.getElementById('excerpt-count').textContent = (post.excerpt || '').length;
+
+    var catSel = document.getElementById('p-category');
+    for (var i = 0; i < catSel.options.length; i++) {
+      if (catSel.options[i].value === post.category) { catSel.selectedIndex = i; break; }
+    }
+
+    // Pre-fill cover image display
+    clearCover();
+    if (post.image) {
+      // Show existing cover as preview (no base64, just URL display)
+      uploadPrompt.style.display  = 'none';
+      uploadPreview.style.display = 'block';
+      previewImg.src  = post.image;
+      previewName.textContent = 'Current cover image';
+      uploadArea.style.borderColor = 'var(--accent)';
+      // Store sentinel so server keeps existing cover unless replaced
+      coverData = null; coverExt = null;
+      uploadArea.dataset.keepSrc = post.image;
+    }
+
+    // Pre-fill blocks
+    blocksContainer.innerHTML = '';
+    if (post.blocks && post.blocks.length) {
+      post.blocks.forEach(function(b) {
+        if (b.type === 'text') {
+          var div = document.createElement('div');
+          div.className = 'block-item';
+          div.dataset.type = 'text';
+          div.innerHTML =
+            '<div class="block-header">' +
+              '<span class="block-label">&#9776; Text block</span>' +
+              '<button type="button" class="block-remove">&#10005; Remove</button>' +
+            '</div>' +
+            '<textarea class="block-textarea" rows="5"></textarea>';
+          div.querySelector('.block-textarea').value = b.content;
+          div.querySelector('.block-remove').addEventListener('click', function() { div.remove(); });
+          blocksContainer.appendChild(div);
+        } else if (b.type === 'image' && b.src) {
+          var idiv = document.createElement('div');
+          idiv.className = 'block-item';
+          idiv.dataset.type   = 'image';
+          idiv.dataset.imgData = '';
+          idiv.dataset.imgExt  = '';
+          idiv.dataset.imgSrc  = b.src;  // existing image path
+
+          var hiddenInput = document.createElement('input');
+          hiddenInput.type   = 'file';
+          hiddenInput.accept = '.png,.jpg,.jpeg';
+          hiddenInput.style.display = 'none';
+
+          idiv.innerHTML =
+            '<div class="block-header">' +
+              '<span class="block-label">&#128247; Image block</span>' +
+              '<button type="button" class="block-remove">&#10005; Remove</button>' +
+            '</div>' +
+            '<div class="block-img-area">' +
+              '<div class="block-img-prompt" style="display:none">Click to select an image (PNG or JPEG, max 5 MB)</div>' +
+              '<div class="block-img-preview">' +
+                '<img class="bpi" style="max-height:220px;max-width:100%;border-radius:4px;display:block;margin:0 auto 0.5rem;object-fit:contain" alt="" />' +
+                '<p class="bpn" style="font-size:0.72rem;color:var(--fg-muted);text-align:center;margin-bottom:0.4rem">Existing image &mdash; click below to replace</p>' +
+                '<button type="button" class="bpc" style="font-size:0.72rem;color:var(--accent);background:none;border:none;cursor:pointer;font-family:var(--ff);text-decoration:underline">Replace image</button>' +
+              '</div>' +
+            '</div>';
+
+          idiv.appendChild(hiddenInput);
+          idiv.querySelector('.bpi').src = b.src;
+          idiv.querySelector('.block-remove').addEventListener('click', function() { idiv.remove(); });
+
+          var changeBtn = idiv.querySelector('.bpc');
+          var imgArea   = idiv.querySelector('.block-img-area');
+          var prompt    = idiv.querySelector('.block-img-prompt');
+          var preview   = idiv.querySelector('.block-img-preview');
+          var pImg      = idiv.querySelector('.bpi');
+          var pName     = idiv.querySelector('.bpn');
+
+          changeBtn.addEventListener('click', function(e) { e.stopPropagation(); hiddenInput.click(); });
+          imgArea.addEventListener('dragover', function(e) { e.preventDefault(); imgArea.style.background = 'var(--accent-dim)'; });
+          imgArea.addEventListener('dragleave', function() { imgArea.style.background = ''; });
+          imgArea.addEventListener('drop', function(e) {
+            e.preventDefault(); imgArea.style.background = '';
+            if (e.dataTransfer.files[0]) loadExistingBlockImg(e.dataTransfer.files[0]);
+          });
+          hiddenInput.addEventListener('change', function() {
+            if (hiddenInput.files[0]) loadExistingBlockImg(hiddenInput.files[0]);
+          });
+
+          function loadExistingBlockImg(file) {
+            if (!['image/png','image/jpeg'].includes(file.type)) { alert('Only PNG and JPEG files are supported.'); return; }
+            if (file.size > 5 * 1024 * 1024) { alert('File must be under 5MB.'); return; }
+            var reader = new FileReader();
+            reader.onload = function(ev) {
+              var dataUrl = ev.target.result;
+              idiv.dataset.imgData = dataUrl.split(',')[1];
+              idiv.dataset.imgExt  = file.type === 'image/png' ? 'png' : 'jpeg';
+              idiv.dataset.imgSrc  = '';  // replaced
+              pImg.src  = dataUrl;
+              pName.textContent = file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)';
+            };
+            reader.readAsDataURL(file);
+          }
+
+          blocksContainer.appendChild(idiv);
+        }
+      });
+    }
+
+    // Scroll to form
+    document.getElementById('post-form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function exitEditMode() {
+    editingId = null;
+    editBanner.classList.remove('active');
+    formTitle.textContent = 'New Blog Post';
+    formSub.textContent   = 'Your post will appear on the GCA blog immediately after publishing.';
+    document.getElementById('post-submit').textContent = 'Publish Post';
+    form.querySelectorAll('input[type="text"]').forEach(function(el) { el.value = ''; });
+    document.getElementById('p-category').selectedIndex = 0;
+    document.getElementById('title-count').textContent   = '0';
+    document.getElementById('excerpt-count').textContent = '0';
+    blocksContainer.innerHTML = '';
+    clearCover();
+    delete uploadArea.dataset.keepSrc;
+  }
+
+  document.getElementById('cancel-edit-btn').addEventListener('click', exitEditMode);
+
+  // ── collectBlocks: handles both new and existing image blocks ──────────────
+  function collectBlocksForEdit() {
+    var blocks = [];
+    blocksContainer.querySelectorAll('.block-item').forEach(function(b) {
+      if (b.dataset.type === 'text') {
+        var ta = b.querySelector('.block-textarea');
+        var c  = ta ? ta.value.trim() : '';
+        if (c) blocks.push({ type: 'text', content: c });
+      } else if (b.dataset.type === 'image') {
+        if (b.dataset.imgData && b.dataset.imgExt) {
+          blocks.push({ type: 'image', data: b.dataset.imgData, ext: b.dataset.imgExt });
+        } else if (b.dataset.imgSrc) {
+          blocks.push({ type: 'image', src: b.dataset.imgSrc });
+        }
+      }
+    });
+    return blocks;
+  }
+
+  // ── Form submit ────────────────────────────────────────────────────────────
   var form    = document.getElementById('post-form');
   var card    = document.getElementById('post-form-card');
   var btn     = document.getElementById('post-submit');
@@ -585,33 +1199,39 @@
     var category = document.getElementById('p-category').value;
     var author   = document.getElementById('p-author').value.trim();
     var excerpt  = document.getElementById('p-excerpt').value.trim();
-    var content  = document.getElementById('p-content').value.trim();
+    var blocks   = editingId ? collectBlocksForEdit() : collectBlocks();
+    var hasText  = blocks.some(function(b) { return b.type === 'text'; });
 
-    if (!title || !category || !author || !excerpt || !content) {
+    if (!title || !category || !author || !excerpt || !hasText) {
       gsap.fromTo(card, { x:0 }, { keyframes:{ x:[-6,6,-4,4,0] }, duration:0.35, ease:'power2.inOut' });
       return;
     }
 
     btn.disabled    = true;
-    btn.textContent = 'Publishing\u2026';
+    btn.textContent = editingId ? 'Saving\u2026' : 'Publishing\u2026';
 
-    fetch('/api/posts', {
-      method: 'POST',
+    var payload = { title:title, category:category, author:author, excerpt:excerpt, blocks:blocks };
+    if (coverData) {
+      payload.imageData = coverData; payload.imageExt = coverExt;
+    } else if (editingId && uploadArea.dataset.keepSrc) {
+      payload.imageSrc = uploadArea.dataset.keepSrc;
+    }
+
+    var url    = editingId ? '/api/posts/' + editingId : '/api/posts';
+    var method = editingId ? 'PUT' : 'POST';
+
+    fetch(url, {
+      method:  method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title:title, category:category, author:author, excerpt:excerpt, content:content }),
+      body:    JSON.stringify(payload),
     })
     .then(function(r) { return r.json(); })
     .then(function(post) {
       success.style.display = 'block';
       gsap.from(success, { opacity:0, y:6, duration:0.4, ease:'power2.out' });
       btn.style.display = 'none';
-      // Reset fields
-      form.querySelectorAll('input, textarea').forEach(function(el) { el.value = ''; });
-      document.getElementById('p-category').selectedIndex = 0;
-      document.getElementById('title-count').textContent   = '0';
-      document.getElementById('excerpt-count').textContent = '0';
+      exitEditMode();
       loadRecent();
-      // Hide success after 5s and re-enable
       setTimeout(function() {
         success.style.display = 'none';
         btn.style.display     = '';
@@ -621,10 +1241,42 @@
     })
     .catch(function() {
       btn.disabled    = false;
-      btn.textContent = 'Publish Post';
+      btn.textContent = editingId ? 'Save Changes' : 'Publish Post';
       alert('Something went wrong. Please try again.');
     });
   });
+
+  // ── Wire edit buttons in loadRecent (called after DOM insertion) ──────────
+  function wireRecentButtons(ul) {
+    ul.querySelectorAll('.edit-btn').forEach(function(ebtn) {
+      ebtn.addEventListener('click', function() {
+        var id = parseInt(ebtn.dataset.id, 10);
+        fetch('/api/posts')
+          .then(function(r) { return r.json(); })
+          .then(function(posts) {
+            var p = posts.find(function(x) { return x.id === id; });
+            if (p) enterEditMode(p);
+          });
+      });
+    });
+  }
+
+  // ── URL param: ?edit=ID ────────────────────────────────────────────────────
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var editId = parseInt(params.get('edit'), 10);
+    if (!editId) return;
+    fetch('/api/posts')
+      .then(function(r) { return r.json(); })
+      .then(function(posts) {
+        var p = posts.find(function(x) { return x.id === editId; });
+        if (p) {
+          enterEditMode(p);
+          // Clean URL without reload
+          history.replaceState(null, '', '/dashboard.html');
+        }
+      });
+  })();
 })();
 </script>
 </body>
