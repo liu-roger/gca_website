@@ -332,18 +332,33 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
-<script>
-(function () {
-  if (sessionStorage.getItem('gca_logged_in')) {
-    window.location.replace('/dashboard.html');
-  }
+<script type="module">
+  import { initializeApp }                        from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js';
+  import { getAnalytics }                         from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-analytics.js';
+  import { getAuth, onAuthStateChanged,
+           signInWithEmailAndPassword,
+           sendPasswordResetEmail }               from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
 
-  if (sessionStorage.getItem('gca_logged_in')) {
-    var loginBtn = document.getElementById('nav-login-btn');
-    if (loginBtn) { loginBtn.href = '/dashboard.html'; loginBtn.textContent = 'Dashboard'; }
-  }
+  const firebaseConfig = {
+    apiKey:            'AIzaSyAIdBwKl4n36r36-nssln6giXwu2ahMxGc',
+    authDomain:        'gca-website-3c221.firebaseapp.com',
+    projectId:         'gca-website-3c221',
+    storageBucket:     'gca-website-3c221.firebasestorage.app',
+    messagingSenderId: '674744602737',
+    appId:             '1:674744602737:web:d53696961cfdc5739b4bd0',
+    measurementId:     'G-M9B971F098',
+  };
 
-  gsap.from('#nav',        { opacity:0, y:-8,  duration:0.5, ease:'power2.out' });
+  const app       = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth      = getAuth(app);
+
+  // If already logged in, go straight to dashboard
+  onAuthStateChanged(auth, function(user) {
+    if (user) window.location.replace('/dashboard.html');
+  });
+
+  gsap.from('#nav',        { opacity:0, y:-8,  duration:0.5,  ease:'power2.out' });
   gsap.from('.login-wrap', { opacity:0, y:20,  duration:0.55, delay:0.15, ease:'power2.out' });
 
   var logo = document.getElementById('nav-logo-img');
@@ -354,11 +369,12 @@
     });
   }
 
-  var form    = document.getElementById('login-form');
-  var card    = document.getElementById('login-card');
-  var errBox  = document.getElementById('login-error');
-  var sucBox  = document.getElementById('login-success');
-  var btn     = document.getElementById('login-submit');
+  var form   = document.getElementById('login-form');
+  var card   = document.getElementById('login-card');
+  var errBox = document.getElementById('login-error');
+  var sucBox = document.getElementById('login-success');
+  var btn    = document.getElementById('login-submit');
+  var errMsg = errBox.querySelector('p');
 
   // Focus styles
   document.querySelectorAll('#login-form input[type="text"], #login-form input[type="password"]').forEach(function(el) {
@@ -374,12 +390,12 @@
 
   form.addEventListener('submit', function(e) {
     e.preventDefault();
-    var user = document.getElementById('l-user').value.trim();
-    var pass = document.getElementById('l-pass').value;
+    var email = document.getElementById('l-user').value.trim();
+    var pass  = document.getElementById('l-pass').value;
 
     errBox.style.display = 'none';
 
-    if (!user || !pass) {
+    if (!email || !pass) {
       gsap.fromTo(card, { x:0 }, { keyframes:{ x:[-7,7,-5,5,0] }, duration:0.38, ease:'power2.inOut' });
       return;
     }
@@ -387,16 +403,49 @@
     btn.disabled    = true;
     btn.textContent = 'Signing in\u2026';
 
-    // Simulate auth check — replace with real backend call
-    setTimeout(function() {
-      sessionStorage.setItem('gca_logged_in', '1');
-      sucBox.style.display = 'block';
-      gsap.from(sucBox, { opacity:0, y:6, duration:0.35, ease:'power2.out' });
-      form.style.display = 'none';
-      setTimeout(function() { window.location.href = '/dashboard.html'; }, 1200);
-    }, 1000);
+    signInWithEmailAndPassword(auth, email, pass)
+      .then(function() {
+        sucBox.style.display = 'block';
+        gsap.from(sucBox, { opacity:0, y:6, duration:0.35, ease:'power2.out' });
+        form.style.display = 'none';
+        setTimeout(function() { window.location.href = '/dashboard.html'; }, 1200);
+      })
+      .catch(function(err) {
+        btn.disabled    = false;
+        btn.textContent = 'Sign In';
+        var msg = 'Incorrect email or password. Please try again.';
+        if (err.code === 'auth/too-many-requests') msg = 'Too many failed attempts. Please try again later.';
+        if (err.code === 'auth/user-not-found')    msg = 'No account found with that email.';
+        if (err.code === 'auth/invalid-email')     msg = 'Please enter a valid email address.';
+        errMsg.textContent   = msg;
+        errBox.style.display = 'block';
+        gsap.fromTo(card, { x:0 }, { keyframes:{ x:[-7,7,-5,5,0] }, duration:0.38, ease:'power2.inOut' });
+      });
   });
-})();
+
+  // Forgot password
+  document.querySelector('.forgot-link').addEventListener('click', function(e) {
+    e.preventDefault();
+    var email = document.getElementById('l-user').value.trim();
+    if (!email) {
+      errMsg.textContent   = 'Enter your email address above, then click "Forgot password".';
+      errBox.style.display = 'block';
+      document.getElementById('l-user').focus();
+      return;
+    }
+    sendPasswordResetEmail(auth, email)
+      .then(function() {
+        errBox.style.display = 'none';
+        sucBox.querySelector('p:first-child').textContent = 'Reset email sent!';
+        sucBox.querySelector('p:last-child').textContent  = 'Check your inbox for a password reset link.';
+        sucBox.style.display = 'block';
+        gsap.from(sucBox, { opacity:0, y:6, duration:0.35, ease:'power2.out' });
+      })
+      .catch(function() {
+        errMsg.textContent   = 'Could not send reset email. Check the address and try again.';
+        errBox.style.display = 'block';
+      });
+  });
 </script>
 </body>
 </html>

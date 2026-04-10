@@ -567,7 +567,45 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
-<script>
+<script type="module">
+  import { initializeApp }            from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
+
+  const firebaseConfig = {
+    apiKey:            'AIzaSyAIdBwKl4n36r36-nssln6giXwu2ahMxGc',
+    authDomain:        'gca-website-3c221.firebaseapp.com',
+    projectId:         'gca-website-3c221',
+    storageBucket:     'gca-website-3c221.firebasestorage.app',
+    messagingSenderId: '674744602737',
+    appId:             '1:674744602737:web:d53696961cfdc5739b4bd0',
+    measurementId:     'G-M9B971F098',
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Guard — redirect to login if not authenticated
+  onAuthStateChanged(auth, function(user) {
+    if (!user) {
+      window.location.replace('/members.html');
+      return;
+    }
+    // Show user email in sidebar if element exists
+    var emailEl = document.getElementById('dash-user-email');
+    if (emailEl) emailEl.textContent = user.email;
+  });
+
+  // Sign out
+  var signOutBtn = document.getElementById('sign-out-btn');
+  if (signOutBtn) {
+    signOutBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      signOut(auth).then(function() {
+        window.location.href = '/members.html';
+      });
+    });
+  }
+
 (function () {
   gsap.from('#nav',       { opacity:0, y:-8,  duration:0.5,  ease:'power2.out' });
   gsap.from('#dash-main', { opacity:0, y:12,  duration:0.5,  delay:0.15, ease:'power2.out' });
@@ -736,13 +774,6 @@
       .catch(function() {
         list.innerHTML = '<div class="recent-empty">Failed to load applications.</div>';
       });
-  }
-
-  var signOut = document.getElementById('sign-out-btn');
-  if (signOut) {
-    signOut.addEventListener('click', function() {
-      sessionStorage.removeItem('gca_logged_in');
-    });
   }
 
   var logo = document.getElementById('nav-logo-img');
@@ -1279,5 +1310,6 @@
   })();
 })();
 </script>
+
 </body>
 </html>

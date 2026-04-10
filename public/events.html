@@ -260,12 +260,31 @@
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
-<script>
-(function () {
-  if (sessionStorage.getItem('gca_logged_in')) {
+<script type="module">
+  import { initializeApp }            from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
+
+  const firebaseConfig = {
+    apiKey:            'AIzaSyAIdBwKl4n36r36-nssln6giXwu2ahMxGc',
+    authDomain:        'gca-website-3c221.firebaseapp.com',
+    projectId:         'gca-website-3c221',
+    storageBucket:     'gca-website-3c221.firebasestorage.app',
+    messagingSenderId: '674744602737',
+    appId:             '1:674744602737:web:d53696961cfdc5739b4bd0',
+    measurementId:     'G-M9B971F098',
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  var currentUser = null;
+  onAuthStateChanged(auth, function(user) {
+    currentUser = user;
     var loginBtn = document.getElementById('nav-login-btn');
-    if (loginBtn) { loginBtn.href = '/dashboard.html'; loginBtn.textContent = 'Dashboard'; }
-  }
+    if (user && loginBtn) { loginBtn.href = '/dashboard.html'; loginBtn.textContent = 'Dashboard'; }
+  });
+
+(function () {
 
   gsap.registerPlugin(ScrollTrigger);
   gsap.from('#nav',         { opacity:0, y:-8,  duration:0.5,  ease:'power2.out' });
@@ -338,7 +357,7 @@
 
     // Edit button — only when logged in
     var editBtn = document.getElementById('modal-edit-btn');
-    if (sessionStorage.getItem('gca_logged_in') && el.dataset.id) {
+    if (currentUser && el.dataset.id) {
       editBtn.href = '/dashboard.html?edit=' + el.dataset.id;
       editBtn.style.display = '';
     } else {
