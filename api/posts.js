@@ -16,6 +16,11 @@ module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
+  if (!db) {
+    res.statusCode = 503;
+    return res.end(JSON.stringify({ error: 'Database not configured. Set FIREBASE_SERVICE_ACCOUNT in environment variables.' }));
+  }
+
   // GET /api/posts
   if (req.method === 'GET') {
     const snap = await db.collection('posts').orderBy('id', 'desc').get();

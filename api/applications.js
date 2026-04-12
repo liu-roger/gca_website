@@ -15,6 +15,11 @@ function readBody(req) {
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
 
+  if (!db) {
+    res.statusCode = 503;
+    return res.end(JSON.stringify({ error: 'Database not configured. Set FIREBASE_SERVICE_ACCOUNT in environment variables.' }));
+  }
+
   // GET /api/applications
   if (req.method === 'GET') {
     const snap = await db.collection('applications').orderBy('id', 'desc').get();

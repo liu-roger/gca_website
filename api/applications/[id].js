@@ -14,6 +14,12 @@ function readBody(req) {
 
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
+
+  if (!db) {
+    res.statusCode = 503;
+    return res.end(JSON.stringify({ error: 'Database not configured. Set FIREBASE_SERVICE_ACCOUNT in environment variables.' }));
+  }
+
   const id = req.query.id;
   if (!id) {
     res.statusCode = 400;
