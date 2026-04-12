@@ -7,6 +7,9 @@
     "start": "node index.js"
   },
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
     "puppeteer": "^24.40.0"
   },
