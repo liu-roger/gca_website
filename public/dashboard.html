@@ -576,11 +576,13 @@
   const auth = getAuth(app);
 
   // Guard — redirect to login if not authenticated
+  var currentAdminEmail = null;
   onAuthStateChanged(auth, function(user) {
     if (!user) {
       window.location.replace('/members.html');
       return;
     }
+    currentAdminEmail = user.email;
     // Show user email in sidebar if element exists
     var emailEl = document.getElementById('dash-user-email');
     if (emailEl) emailEl.textContent = user.email;
@@ -663,10 +665,12 @@
   });
 
   function patchApplication(id, data, card, onSuccess) {
+    var payload = Object.assign({}, data);
+    if (currentAdminEmail) payload.adminEmail = currentAdminEmail;
     fetch('/api/applications/' + id, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body: JSON.stringify(payload),
     })
     .then(function(r) { return r.json(); })
     .then(function(updated) {
