@@ -132,27 +132,22 @@ module.exports = async function handler(req, res) {
     }
 
     if (newStatus === 'Interview Scheduled') {
-      const dateDisplay = changes.interviewDate || existing.interviewDate || 'a time to be confirmed';
       await sendEmail({
         to:      existing.email,
         replyTo: adminEmail,
-        subject: 'Your GCA Interview Has Been Scheduled',
+        subject: 'Interview Request — Global Communication Association',
         html: buildEmailHtml(existing.firstName, `
           <p style="font-size:16px;line-height:1.6;">
-            Great news — we would like to schedule an interview with you as part of
-            the <strong>Global Communication Association</strong> application process.
+            We have reviewed your application to the
+            <strong>Global Communication Association</strong> and would love to
+            schedule an interview with you as the next step in our process.
           </p>
-          <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:16px 20px;margin:20px 0;">
-            <p style="margin:0;font-size:15px;font-weight:600;color:#0369a1;">
-              Scheduled Interview Time
-            </p>
-            <p style="margin:6px 0 0;font-size:18px;font-weight:700;color:#0c4a6e;">
-              ${dateDisplay}
-            </p>
-          </div>
           <p style="font-size:16px;line-height:1.6;">
-            If this time does not work for you or you have any questions,
-            please reply to this email and we will find an alternative.
+            <strong>Please reply to this email with 2–3 dates and times that work
+            for you</strong> and we will confirm a time as soon as possible.
+          </p>
+          <p style="font-size:16px;line-height:1.6;">
+            We look forward to speaking with you!
           </p>
         `),
       });
