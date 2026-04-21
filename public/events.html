@@ -317,23 +317,27 @@
             return b.content.split(/\n\n+/).map(function(para) {
               var trimmed = para.trim();
 
-              // Heading: paragraph starts with "# "
+              // Centering: strip :: wrapper first so it works with any element type
+              var centered = trimmed.startsWith('::') && trimmed.endsWith('::') && trimmed.length > 4;
+              if (centered) trimmed = trimmed.slice(2, -2).trim();
+
+              // Heading: starts with "# "
               if (/^# /.test(trimmed)) {
-                return '<p style="font-size:1.15rem;font-weight:700;letter-spacing:-0.02em;line-height:1.3;color:var(--fg);margin-bottom:0.75rem;margin-top:0.5rem">' + formatInline(trimmed.slice(2)) + '</p>';
+                var hStyle = 'font-size:1.15rem;font-weight:700;letter-spacing:-0.02em;line-height:1.3;color:var(--fg);margin-bottom:0.75rem;margin-top:0.5rem';
+                if (centered) hStyle += ';text-align:center';
+                return '<p style="' + hStyle + '">' + formatInline(trimmed.slice(2)) + '</p>';
               }
 
               // Bullet list: every line starts with "- "
               var lines = trimmed.split('\n');
               if (lines.every(function(l) { return /^- /.test(l); })) {
+                var listStyle = 'padding-left:1.4rem;margin-bottom:1rem;line-height:1.75;font-size:0.88rem;color:var(--fg)';
+                if (centered) listStyle += ';text-align:center;list-style-position:inside;padding-left:0';
                 var items = lines.map(function(l) {
                   return '<li>' + formatInline(l.slice(2)) + '</li>';
                 }).join('');
-                return '<ul style="padding-left:1.4rem;margin-bottom:1rem;line-height:1.75;font-size:0.88rem;color:var(--fg)">' + items + '</ul>';
+                return '<ul style="' + listStyle + '">' + items + '</ul>';
               }
-
-              // Centered paragraph: wrapped in ::...::
-              var centered = trimmed.startsWith('::') && trimmed.endsWith('::') && trimmed.length > 4;
-              if (centered) trimmed = trimmed.slice(2, -2);
 
               var html = formatInline(trimmed).replace(/\n/g, '<br>');
               var style = 'margin-bottom:1rem;line-height:1.75;font-size:0.88rem;color:var(--fg)';
