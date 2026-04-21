@@ -259,5 +259,15 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
 <script src="/script.js"></script>
+<script src="/api/firebase-config"></script>
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
+  const auth = getAuth(initializeApp(window.firebaseConfig));
+  onAuthStateChanged(auth, function(user) {
+    var btn = document.getElementById('nav-login-btn');
+    if (user && btn) { btn.textContent = 'Dashboard'; btn.href = '/dashboard.html'; }
+  });
+</script>
 </body>
 </html>
