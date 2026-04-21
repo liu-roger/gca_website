@@ -302,8 +302,11 @@
         return blocks.map(function(b) {
           if (b.type === 'text') {
             return b.content.split(/\n\n+/).map(function(para) {
-              return '<p style="margin-bottom:1rem;line-height:1.75;font-size:0.88rem;color:var(--fg)">' +
-                escHtml(para.trim()).replace(/\n/g, '<br>') + '</p>';
+              var html = escHtml(para.trim())
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/_(.*?)_/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+              return '<p style="margin-bottom:1rem;line-height:1.75;font-size:0.88rem;color:var(--fg)">' + html + '</p>';
             }).join('');
           }
           if (b.type === 'image') {

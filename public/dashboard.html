@@ -214,6 +214,16 @@
       transition: background 0.12s ease, color 0.12s ease;
     }
     .block-remove:hover { background: #fef2f2; color: #b91c1c; }
+    .block-fmt-btns { display: flex; align-items: center; gap: 3px; }
+    .block-fmt-btn {
+      background: none; border: 1px solid var(--border); cursor: pointer;
+      font-size: 0.72rem; color: var(--fg-muted); font-family: var(--ff);
+      padding: 1px 7px; border-radius: 4px; line-height: 1.6;
+      transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+    }
+    .block-fmt-btn:hover { background: var(--surface); border-color: var(--border-hi); color: var(--fg); }
+    .block-fmt-btn.bold { font-weight: 700; }
+    .block-fmt-btn.italic { font-style: italic; }
     .block-textarea {
       width: 100%;
       padding: 10px 13px;
@@ -870,6 +880,29 @@
     addImageBlock();
   });
 
+  function applyFormat(ta, marker) {
+    var start = ta.selectionStart, end = ta.selectionEnd;
+    var selected = ta.value.slice(start, end);
+    var wrapped = marker + (selected || 'text') + marker;
+    ta.setRangeText(wrapped, start, end, 'select');
+    if (!selected) {
+      ta.selectionStart = start + marker.length;
+      ta.selectionEnd   = start + marker.length + 4;
+    }
+    ta.focus();
+  }
+
+  function wireTextBlock(div) {
+    var ta = div.querySelector('.block-textarea');
+    div.querySelector('.block-remove').addEventListener('click', function() { div.remove(); });
+    div.querySelector('.fmt-bold').addEventListener('click', function() { applyFormat(ta, '**'); });
+    div.querySelector('.fmt-italic').addEventListener('click', function() { applyFormat(ta, '_'); });
+    ta.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); applyFormat(ta, '**'); }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'i') { e.preventDefault(); applyFormat(ta, '_'); }
+    });
+  }
+
   function addTextBlock() {
     var div = document.createElement('div');
     div.className = 'block-item';
@@ -877,10 +910,16 @@
     div.innerHTML =
       '<div class="block-header">' +
         '<span class="block-label">&#9776; Text block</span>' +
-        '<button type="button" class="block-remove">&#10005; Remove</button>' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          '<div class="block-fmt-btns">' +
+            '<button type="button" class="block-fmt-btn bold fmt-bold">B</button>' +
+            '<button type="button" class="block-fmt-btn italic fmt-italic">I</button>' +
+          '</div>' +
+          '<button type="button" class="block-remove">&#10005; Remove</button>' +
+        '</div>' +
       '</div>' +
-      '<textarea class="block-textarea" rows="5" placeholder="Write your paragraph or section here\u2026"></textarea>';
-    div.querySelector('.block-remove').addEventListener('click', function() { div.remove(); });
+      '<textarea class="block-textarea" rows="5" placeholder="Write your paragraph or section here…"></textarea>';
+    wireTextBlock(div);
     blocksContainer.appendChild(div);
     div.querySelector('textarea').focus();
   }
@@ -1030,11 +1069,17 @@
           div.innerHTML =
             '<div class="block-header">' +
               '<span class="block-label">&#9776; Text block</span>' +
-              '<button type="button" class="block-remove">&#10005; Remove</button>' +
+              '<div style="display:flex;align-items:center;gap:8px">' +
+                '<div class="block-fmt-btns">' +
+                  '<button type="button" class="block-fmt-btn bold fmt-bold">B</button>' +
+                  '<button type="button" class="block-fmt-btn italic fmt-italic">I</button>' +
+                '</div>' +
+                '<button type="button" class="block-remove">&#10005; Remove</button>' +
+              '</div>' +
             '</div>' +
             '<textarea class="block-textarea" rows="5"></textarea>';
           div.querySelector('.block-textarea').value = b.content;
-          div.querySelector('.block-remove').addEventListener('click', function() { div.remove(); });
+          wireTextBlock(div);
           blocksContainer.appendChild(div);
         } else if (b.type === 'image' && b.src) {
           var idiv = document.createElement('div');
