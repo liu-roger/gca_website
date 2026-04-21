@@ -537,6 +537,7 @@
   const storage = getStorage(app);
 
   async function uploadToStorage(base64, ext) {
+    console.log('[Storage] bucket:', window.firebaseConfig && window.firebaseConfig.storageBucket);
     const byteStr = atob(base64);
     const ab = new ArrayBuffer(byteStr.length);
     const ia = new Uint8Array(ab);
@@ -544,10 +545,16 @@
     const mime = ext === 'png' ? 'image/png' : 'image/jpeg';
     const blob = new Blob([ab], { type: mime });
     const fileRef = storageRef(storage, 'posts/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext);
+    console.log('[Storage] uploading to:', fileRef.fullPath);
     const timeout = new Promise((_, reject) =>
       setTimeout(() => reject(new Error('Upload timed out — check Firebase Storage is enabled and rules allow writes.')), 30000)
     );
-    await Promise.race([uploadBytes(fileRef, blob), timeout]);
+    try {
+      await Promise.race([uploadBytes(fileRef, blob), timeout]);
+    } catch (e) {
+      console.error('[Storage] uploadBytes error:', e.code, e.message);
+      throw e;
+    }
     return getDownloadURL(fileRef);
   }
 
