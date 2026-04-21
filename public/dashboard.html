@@ -397,7 +397,7 @@
       <li><a href="/events.html">Events</a></li>
     </ul>
     <div style="display:flex;gap:8px;align-items:center">
-      <a href="/members.html" class="btn btn-sm btn-outline" style="border-color:var(--accent);color:var(--accent)">Login</a>
+      <a href="/members.html" class="btn btn-sm btn-outline" style="border-color:var(--accent);color:var(--accent)" id="nav-login-btn">Login</a>
       <a href="/#join" class="btn btn-sm btn-primary">Join GCA</a>
     </div>
   </div>
@@ -575,9 +575,10 @@
       return;
     }
     currentAdminEmail = user.email;
-    // Show user email in sidebar if element exists
     var emailEl = document.getElementById('dash-user-email');
     if (emailEl) emailEl.textContent = user.email;
+    var navBtn = document.getElementById('nav-login-btn');
+    if (navBtn) { navBtn.textContent = 'Dashboard'; navBtn.href = '/dashboard.html'; }
   });
 
   // Sign out
