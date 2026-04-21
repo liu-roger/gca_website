@@ -225,6 +225,14 @@
     .block-fmt-btn.bold { font-weight: 700; }
     .block-fmt-btn.italic { font-style: italic; }
     .block-fmt-btn.bold-italic { font-weight: 700; font-style: italic; }
+    .cat-pill {
+      padding: 4px 12px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em;
+      border: 1px solid var(--border); border-radius: 100px; background: var(--bg);
+      color: var(--fg-muted); cursor: pointer; font-family: var(--ff);
+      transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+    }
+    .cat-pill:hover { background: var(--surface); border-color: var(--border-hi); color: var(--fg); }
+    .cat-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
     .drag-handle {
       cursor: grab; color: var(--fg-subtle); font-size: 1rem;
       padding: 0 4px; user-select: none; -webkit-user-select: none; line-height: 1;
@@ -460,15 +468,15 @@
 
           <div class="field-row-2">
             <div class="field">
-              <label for="p-category">Category <span style="color:var(--accent)">*</span></label>
-              <select id="p-category">
-                <option value="" disabled selected>Select one&hellip;</option>
-                <option value="cultural">Cultural Exchange</option>
-                <option value="speakers">Speaker Series</option>
-                <option value="networking">Networking</option>
-                <option value="workshop">Workshop</option>
-                <option value="community">Community</option>
-              </select>
+              <label>Category <span style="color:var(--accent)">*</span></label>
+              <input type="hidden" id="p-category" />
+              <div id="category-pills" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:2px">
+                <button type="button" class="cat-pill" data-value="cultural">Cultural Exchange</button>
+                <button type="button" class="cat-pill" data-value="speakers">Speaker Series</button>
+                <button type="button" class="cat-pill" data-value="networking">Networking</button>
+                <button type="button" class="cat-pill" data-value="workshop">Workshop</button>
+                <button type="button" class="cat-pill" data-value="community">Community</button>
+              </div>
             </div>
             <div class="field">
               <label for="p-author">Author name <span style="color:var(--accent)">*</span></label>
@@ -883,6 +891,16 @@
   // ── Block editor ──────────────────────────────────────────────────────────
   var blocksContainer = document.getElementById('blocks-container');
 
+  // Category pills — toggle active and sync to hidden input
+  document.querySelectorAll('.cat-pill').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      pill.classList.toggle('active');
+      var selected = Array.from(document.querySelectorAll('.cat-pill.active'))
+        .map(function(p) { return p.dataset.value; });
+      document.getElementById('p-category').value = selected.join(',');
+    });
+  });
+
   document.getElementById('add-text-btn').addEventListener('click', function() {
     addTextBlock();
   });
@@ -1128,10 +1146,11 @@
     document.getElementById('title-count').textContent   = (post.title   || '').length;
     document.getElementById('excerpt-count').textContent = (post.excerpt || '').length;
 
-    var catSel = document.getElementById('p-category');
-    for (var i = 0; i < catSel.options.length; i++) {
-      if (catSel.options[i].value === post.category) { catSel.selectedIndex = i; break; }
-    }
+    var existingCats = (post.category || '').split(',').map(function(c) { return c.trim(); });
+    document.querySelectorAll('.cat-pill').forEach(function(p) {
+      p.classList.toggle('active', existingCats.indexOf(p.dataset.value) !== -1);
+    });
+    document.getElementById('p-category').value = post.category || '';
 
     // Pre-fill cover image display
     clearCover();
@@ -1257,7 +1276,8 @@
     formSub.textContent   = 'Your post will appear on the GCA blog immediately after publishing.';
     document.getElementById('post-submit').textContent = 'Publish Post';
     form.querySelectorAll('input[type="text"]').forEach(function(el) { el.value = ''; });
-    document.getElementById('p-category').selectedIndex = 0;
+    document.getElementById('p-category').value = '';
+    document.querySelectorAll('.cat-pill').forEach(function(p) { p.classList.remove('active'); });
     document.getElementById('title-count').textContent   = '0';
     document.getElementById('excerpt-count').textContent = '0';
     blocksContainer.innerHTML = '';
