@@ -530,9 +530,23 @@
 <script type="module">
   import { initializeApp }            from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js';
   import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
+  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-storage.js';
 
-  const app  = initializeApp(window.firebaseConfig);
-  const auth = getAuth(app);
+  const app     = initializeApp(window.firebaseConfig);
+  const auth    = getAuth(app);
+  const storage = getStorage(app);
+
+  async function uploadToStorage(base64, ext) {
+    const byteStr = atob(base64);
+    const ab = new ArrayBuffer(byteStr.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteStr.length; i++) ia[i] = byteStr.charCodeAt(i);
+    const mime = ext === 'png' ? 'image/png' : 'image/jpeg';
+    const blob = new Blob([ab], { type: mime });
+    const fileRef = storageRef(storage, 'posts/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext);
+    await uploadBytes(fileRef, blob);
+    return getDownloadURL(fileRef);
+  }
 
   // Guard — redirect to login if not authenticated
   var currentAdminEmail = null;
@@ -1137,15 +1151,15 @@
   var btn     = document.getElementById('post-submit');
   var success = document.getElementById('post-success');
 
-  form.addEventListener('submit', function(e) {
+  form.addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    var title    = document.getElementById('p-title').value.trim();
-    var category = document.getElementById('p-category').value;
-    var author   = document.getElementById('p-author').value.trim();
-    var excerpt  = document.getElementById('p-excerpt').value.trim();
-    var blocks   = editingId ? collectBlocksForEdit() : collectBlocks();
-    var hasText  = blocks.some(function(b) { return b.type === 'text'; });
+    var title     = document.getElementById('p-title').value.trim();
+    var category  = document.getElementById('p-category').value;
+    var author    = document.getElementById('p-author').value.trim();
+    var excerpt   = document.getElementById('p-excerpt').value.trim();
+    var rawBlocks = editingId ? collectBlocksForEdit() : collectBlocks();
+    var hasText   = rawBlocks.some(function(b) { return b.type === 'text'; });
 
     if (!title || !category || !author || !excerpt || !hasText) {
       gsap.fromTo(card, { x:0 }, { keyframes:{ x:[-6,6,-4,4,0] }, duration:0.35, ease:'power2.inOut' });
@@ -1153,25 +1167,46 @@
     }
 
     btn.disabled    = true;
-    btn.textContent = editingId ? 'Saving\u2026' : 'Publishing\u2026';
+    btn.textContent = 'Uploading…';
 
-    var payload = { title:title, category:category, author:author, excerpt:excerpt, blocks:blocks };
-    if (coverData) {
-      payload.imageData = coverData; payload.imageExt = coverExt;
-    } else if (editingId && uploadArea.dataset.keepSrc) {
-      payload.imageSrc = uploadArea.dataset.keepSrc;
-    }
+    try {
+      // Upload cover image to Firebase Storage if a new one was selected
+      var coverUrl = null;
+      if (coverData) {
+        coverUrl = await uploadToStorage(coverData, coverExt);
+      }
 
-    var url    = editingId ? '/api/posts/' + editingId : '/api/posts';
-    var method = editingId ? 'PUT' : 'POST';
+      // Upload any new block images to Firebase Storage
+      var blocks = [];
+      for (var i = 0; i < rawBlocks.length; i++) {
+        var b = rawBlocks[i];
+        if (b.type === 'image' && b.data && b.ext) {
+          var blockUrl = await uploadToStorage(b.data, b.ext);
+          blocks.push({ type: 'image', src: blockUrl });
+        } else {
+          blocks.push(b);
+        }
+      }
 
-    fetch(url, {
-      method:  method,
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(payload),
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(post) {
+      btn.textContent = editingId ? 'Saving…' : 'Publishing…';
+
+      var payload = { title:title, category:category, author:author, excerpt:excerpt, blocks:blocks };
+      if (coverUrl) {
+        payload.image = coverUrl;
+      } else if (editingId && uploadArea.dataset.keepSrc) {
+        payload.imageSrc = uploadArea.dataset.keepSrc;
+      }
+
+      var url    = editingId ? '/api/posts/' + editingId : '/api/posts';
+      var method = editingId ? 'PUT' : 'POST';
+
+      var r = await fetch(url, {
+        method:  method,
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+      await r.json();
+
       success.style.display = 'block';
       gsap.from(success, { opacity:0, y:6, duration:0.4, ease:'power2.out' });
       btn.style.display = 'none';
@@ -1183,12 +1218,11 @@
         btn.disabled          = false;
         btn.textContent       = 'Publish Post';
       }, 5000);
-    })
-    .catch(function() {
+    } catch(err) {
       btn.disabled    = false;
       btn.textContent = editingId ? 'Save Changes' : 'Publish Post';
       alert('Something went wrong. Please try again.');
-    });
+    }
   });
 
   // ── Wire edit buttons in loadRecent (called after DOM insertion) ──────────
