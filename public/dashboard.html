@@ -224,6 +224,14 @@
     .block-fmt-btn:hover { background: var(--surface); border-color: var(--border-hi); color: var(--fg); }
     .block-fmt-btn.bold { font-weight: 700; }
     .block-fmt-btn.italic { font-style: italic; }
+    .drag-handle {
+      cursor: grab; color: var(--fg-subtle); font-size: 1rem;
+      padding: 0 4px; user-select: none; -webkit-user-select: none; line-height: 1;
+    }
+    .drag-handle:active { cursor: grabbing; }
+    .block-item.dragging { opacity: 0.35; }
+    .block-item.drag-over-top { box-shadow: 0 -3px 0 var(--accent); }
+    .block-item.drag-over-bottom { box-shadow: 0 3px 0 var(--accent); }
     .block-textarea {
       width: 100%;
       padding: 10px 13px;
@@ -880,6 +888,50 @@
     addImageBlock();
   });
 
+  var dragSrc = null;
+
+  function makeDraggable(div) {
+    var handle = div.querySelector('.drag-handle');
+    handle.setAttribute('draggable', 'true');
+    handle.addEventListener('dragstart', function(e) {
+      dragSrc = div;
+      div.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', '');
+    });
+    handle.addEventListener('dragend', function() {
+      dragSrc = null;
+      div.classList.remove('dragging');
+      blocksContainer.querySelectorAll('.block-item').forEach(function(b) {
+        b.classList.remove('drag-over-top', 'drag-over-bottom');
+      });
+    });
+    div.addEventListener('dragover', function(e) {
+      if (!dragSrc || dragSrc === div) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      var mid = div.getBoundingClientRect().top + div.getBoundingClientRect().height / 2;
+      div.classList.remove('drag-over-top', 'drag-over-bottom');
+      div.classList.add(e.clientY < mid ? 'drag-over-top' : 'drag-over-bottom');
+    });
+    div.addEventListener('dragleave', function(e) {
+      if (!div.contains(e.relatedTarget)) {
+        div.classList.remove('drag-over-top', 'drag-over-bottom');
+      }
+    });
+    div.addEventListener('drop', function(e) {
+      if (!dragSrc || dragSrc === div) return;
+      e.preventDefault();
+      var mid = div.getBoundingClientRect().top + div.getBoundingClientRect().height / 2;
+      if (e.clientY < mid) {
+        blocksContainer.insertBefore(dragSrc, div);
+      } else {
+        blocksContainer.insertBefore(dragSrc, div.nextSibling);
+      }
+      div.classList.remove('drag-over-top', 'drag-over-bottom');
+    });
+  }
+
   function applyFormat(ta, marker) {
     var start = ta.selectionStart, end = ta.selectionEnd;
     var selected = ta.value.slice(start, end);
@@ -909,7 +961,7 @@
     div.dataset.type = 'text';
     div.innerHTML =
       '<div class="block-header">' +
-        '<span class="block-label">&#9776; Text block</span>' +
+        '<span class="block-label"><span class="drag-handle">&#8942;&#8942;</span> Text block</span>' +
         '<div style="display:flex;align-items:center;gap:8px">' +
           '<div class="block-fmt-btns">' +
             '<button type="button" class="block-fmt-btn bold fmt-bold">B</button>' +
@@ -920,6 +972,7 @@
       '</div>' +
       '<textarea class="block-textarea" rows="5" placeholder="Write your paragraph or section here…"></textarea>';
     wireTextBlock(div);
+    makeDraggable(div);
     blocksContainer.appendChild(div);
     div.querySelector('textarea').focus();
   }
@@ -938,7 +991,7 @@
 
     div.innerHTML =
       '<div class="block-header">' +
-        '<span class="block-label">&#128247; Image block</span>' +
+        '<span class="block-label"><span class="drag-handle">&#8942;&#8942;</span> Image block</span>' +
         '<button type="button" class="block-remove">&#10005; Remove</button>' +
       '</div>' +
       '<div class="block-img-area">' +
@@ -951,6 +1004,7 @@
       '</div>';
 
     div.appendChild(hiddenInput);
+    makeDraggable(div);
 
     var imgArea   = div.querySelector('.block-img-area');
     var prompt    = div.querySelector('.block-img-prompt');
@@ -1068,7 +1122,7 @@
           div.dataset.type = 'text';
           div.innerHTML =
             '<div class="block-header">' +
-              '<span class="block-label">&#9776; Text block</span>' +
+              '<span class="block-label"><span class="drag-handle">&#8942;&#8942;</span> Text block</span>' +
               '<div style="display:flex;align-items:center;gap:8px">' +
                 '<div class="block-fmt-btns">' +
                   '<button type="button" class="block-fmt-btn bold fmt-bold">B</button>' +
@@ -1080,6 +1134,7 @@
             '<textarea class="block-textarea" rows="5"></textarea>';
           div.querySelector('.block-textarea').value = b.content;
           wireTextBlock(div);
+          makeDraggable(div);
           blocksContainer.appendChild(div);
         } else if (b.type === 'image' && b.src) {
           var idiv = document.createElement('div');
@@ -1096,7 +1151,7 @@
 
           idiv.innerHTML =
             '<div class="block-header">' +
-              '<span class="block-label">&#128247; Image block</span>' +
+              '<span class="block-label"><span class="drag-handle">&#8942;&#8942;</span> Image block</span>' +
               '<button type="button" class="block-remove">&#10005; Remove</button>' +
             '</div>' +
             '<div class="block-img-area">' +
@@ -1109,6 +1164,7 @@
             '</div>';
 
           idiv.appendChild(hiddenInput);
+          makeDraggable(idiv);
           idiv.querySelector('.bpi').src = b.src;
           idiv.querySelector('.block-remove').addEventListener('click', function() { idiv.remove(); });
 
