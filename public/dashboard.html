@@ -544,7 +544,10 @@
     const mime = ext === 'png' ? 'image/png' : 'image/jpeg';
     const blob = new Blob([ab], { type: mime });
     const fileRef = storageRef(storage, 'posts/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext);
-    await uploadBytes(fileRef, blob);
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Upload timed out — check Firebase Storage is enabled and rules allow writes.')), 30000)
+    );
+    await Promise.race([uploadBytes(fileRef, blob), timeout]);
     return getDownloadURL(fileRef);
   }
 
@@ -1219,9 +1222,10 @@
         btn.textContent       = 'Publish Post';
       }, 5000);
     } catch(err) {
+      console.error('Post submit error:', err);
       btn.disabled    = false;
       btn.textContent = editingId ? 'Save Changes' : 'Publish Post';
-      alert('Something went wrong. Please try again.');
+      alert('Error: ' + (err && err.message ? err.message : 'Something went wrong. Please try again.'));
     }
   });
 
