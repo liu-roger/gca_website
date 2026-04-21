@@ -298,6 +298,13 @@
   var backdrop   = document.getElementById('modal-backdrop');
   var modalClose = document.querySelectorAll('.modal-close, .js-close-modal');
 
+  function formatInline(text) {
+    return escHtml(text)
+      .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/_(.*?)_/g, '<em>$1</em>');
+  }
+
   function renderBlocks(el) {
     // New-style: blocks array stored as JSON
     if (el.dataset.blocks) {
@@ -307,11 +314,25 @@
         return blocks.map(function(b) {
           if (b.type === 'text') {
             return b.content.split(/\n\n+/).map(function(para) {
-              var html = escHtml(para.trim())
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/_(.*?)_/g, '<em>$1</em>')
-                .replace(/\n/g, '<br>');
-              return '<p style="margin-bottom:1rem;line-height:1.75;font-size:0.88rem;color:var(--fg)">' + html + '</p>';
+              var trimmed = para.trim();
+
+              // Bullet list: every line starts with "- "
+              var lines = trimmed.split('\n');
+              if (lines.every(function(l) { return /^- /.test(l); })) {
+                var items = lines.map(function(l) {
+                  return '<li>' + formatInline(l.slice(2)) + '</li>';
+                }).join('');
+                return '<ul style="padding-left:1.4rem;margin-bottom:1rem;line-height:1.75;font-size:0.88rem;color:var(--fg)">' + items + '</ul>';
+              }
+
+              // Centered paragraph: wrapped in ::...::
+              var centered = trimmed.startsWith('::') && trimmed.endsWith('::') && trimmed.length > 4;
+              if (centered) trimmed = trimmed.slice(2, -2);
+
+              var html = formatInline(trimmed).replace(/\n/g, '<br>');
+              var style = 'margin-bottom:1rem;line-height:1.75;font-size:0.88rem;color:var(--fg)';
+              if (centered) style += ';text-align:center';
+              return '<p style="' + style + '">' + html + '</p>';
             }).join('');
           }
           if (b.type === 'image') {
@@ -327,7 +348,7 @@
     // Legacy: plain content string
     var raw = el.dataset.content || '';
     return raw.split(/\n\n+/).map(function(p) {
-      return '<p style="margin-bottom:1rem;line-height:1.75;font-size:0.88rem">' + escHtml(p.trim()) + '</p>';
+      return '<p style="margin-bottom:1rem;line-height:1.75;font-size:0.88rem">' + formatInline(p.trim()) + '</p>';
     }).join('');
   }
 

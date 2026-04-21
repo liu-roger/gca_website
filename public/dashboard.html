@@ -224,6 +224,7 @@
     .block-fmt-btn:hover { background: var(--surface); border-color: var(--border-hi); color: var(--fg); }
     .block-fmt-btn.bold { font-weight: 700; }
     .block-fmt-btn.italic { font-style: italic; }
+    .block-fmt-btn.bold-italic { font-weight: 700; font-style: italic; }
     .drag-handle {
       cursor: grab; color: var(--fg-subtle); font-size: 1rem;
       padding: 0 4px; user-select: none; -webkit-user-select: none; line-height: 1;
@@ -944,11 +945,26 @@
     ta.focus();
   }
 
+  function applyBullet(ta) {
+    var val = ta.value;
+    var lineStart = val.lastIndexOf('\n', ta.selectionStart - 1) + 1;
+    var lineEnd   = val.indexOf('\n', ta.selectionEnd);
+    if (lineEnd === -1) lineEnd = val.length;
+    var lines = val.slice(lineStart, lineEnd).split('\n');
+    var allBulleted = lines.every(function(l) { return /^- /.test(l); });
+    var newLines = lines.map(function(l) { return allBulleted ? l.slice(2) : '- ' + l; });
+    ta.setRangeText(newLines.join('\n'), lineStart, lineEnd, 'preserve');
+    ta.focus();
+  }
+
   function wireTextBlock(div) {
     var ta = div.querySelector('.block-textarea');
     div.querySelector('.block-remove').addEventListener('click', function() { div.remove(); });
     div.querySelector('.fmt-bold').addEventListener('click', function() { applyFormat(ta, '**'); });
     div.querySelector('.fmt-italic').addEventListener('click', function() { applyFormat(ta, '_'); });
+    div.querySelector('.fmt-bold-italic').addEventListener('click', function() { applyFormat(ta, '***'); });
+    div.querySelector('.fmt-bullet').addEventListener('click', function() { applyBullet(ta); });
+    div.querySelector('.fmt-center').addEventListener('click', function() { applyFormat(ta, '::'); });
     ta.addEventListener('keydown', function(e) {
       if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); applyFormat(ta, '**'); }
       if ((e.ctrlKey || e.metaKey) && e.key === 'i') { e.preventDefault(); applyFormat(ta, '_'); }
@@ -964,8 +980,11 @@
         '<span class="block-label"><span class="drag-handle">&#8942;&#8942;</span> Text block</span>' +
         '<div style="display:flex;align-items:center;gap:8px">' +
           '<div class="block-fmt-btns">' +
-            '<button type="button" class="block-fmt-btn bold fmt-bold">B</button>' +
-            '<button type="button" class="block-fmt-btn italic fmt-italic">I</button>' +
+            '<button type="button" class="block-fmt-btn bold fmt-bold" title="Bold">B</button>' +
+            '<button type="button" class="block-fmt-btn italic fmt-italic" title="Italic">I</button>' +
+            '<button type="button" class="block-fmt-btn bold-italic fmt-bold-italic" title="Bold + Italic">B/I</button>' +
+            '<button type="button" class="block-fmt-btn fmt-bullet" title="Bullet list">•</button>' +
+            '<button type="button" class="block-fmt-btn fmt-center" title="Center">≡</button>' +
           '</div>' +
           '<button type="button" class="block-remove">&#10005; Remove</button>' +
         '</div>' +
@@ -1125,8 +1144,11 @@
               '<span class="block-label"><span class="drag-handle">&#8942;&#8942;</span> Text block</span>' +
               '<div style="display:flex;align-items:center;gap:8px">' +
                 '<div class="block-fmt-btns">' +
-                  '<button type="button" class="block-fmt-btn bold fmt-bold">B</button>' +
-                  '<button type="button" class="block-fmt-btn italic fmt-italic">I</button>' +
+                  '<button type="button" class="block-fmt-btn bold fmt-bold" title="Bold">B</button>' +
+                  '<button type="button" class="block-fmt-btn italic fmt-italic" title="Italic">I</button>' +
+                  '<button type="button" class="block-fmt-btn bold-italic fmt-bold-italic" title="Bold + Italic">B/I</button>' +
+                  '<button type="button" class="block-fmt-btn fmt-bullet" title="Bullet list">•</button>' +
+                  '<button type="button" class="block-fmt-btn fmt-center" title="Center">≡</button>' +
                 '</div>' +
                 '<button type="button" class="block-remove">&#10005; Remove</button>' +
               '</div>' +
