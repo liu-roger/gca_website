@@ -131,26 +131,7 @@
     }
     .forgot-link:hover { color: var(--accent); }
 
-    .remember-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 1.4rem;
-    }
 
-    .remember-row input[type="checkbox"] {
-      width: 14px;
-      height: 14px;
-      accent-color: var(--accent);
-      cursor: pointer;
-    }
-
-    .remember-row label {
-      font-size: 0.75rem;
-      color: var(--fg-muted);
-      cursor: pointer;
-      margin: 0;
-    }
 
     #login-submit {
       width: 100%;
@@ -309,10 +290,7 @@
           </div>
           <input id="l-pass" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password" />
         </div>
-        <div class="remember-row">
-          <input type="checkbox" id="l-remember" />
-          <label for="l-remember">Keep me signed in</label>
-        </div>
+
         <button type="submit" class="btn btn-primary btn-md" id="login-submit">Sign In</button>
       </form>
 
@@ -338,7 +316,9 @@
   import { getAnalytics }                         from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-analytics.js';
   import { getAuth, onAuthStateChanged,
            signInWithEmailAndPassword,
-           sendPasswordResetEmail }               from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
+           sendPasswordResetEmail,
+           browserSessionPersistence,
+           setPersistence }                       from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
 
   const app       = initializeApp(window.firebaseConfig);
   const analytics = getAnalytics(app);
@@ -394,7 +374,8 @@
     btn.disabled    = true;
     btn.textContent = 'Signing in\u2026';
 
-    signInWithEmailAndPassword(auth, email, pass)
+    setPersistence(auth, browserSessionPersistence)
+      .then(function() { return signInWithEmailAndPassword(auth, email, pass); })
       .then(function() {
         sucBox.style.display = 'block';
         gsap.from(sucBox, { opacity:0, y:6, duration:0.35, ease:'power2.out' });
