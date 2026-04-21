@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.join(__dirname, 'public');
 const PORT = 3000;
 
 const MIME = {
@@ -24,17 +25,26 @@ const MIME = {
 };
 
 const server = http.createServer((req, res) => {
-  let urlPath = req.url.split('?')[0];
+  let urlPath = decodeURIComponent(req.url.split('?')[0]);
   if (urlPath === '/') urlPath = '/index.html';
 
-  const filePath = path.join(__dirname, urlPath);
+  const filePath = path.join(ROOT, urlPath);
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME[ext] || 'application/octet-stream';
 
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      res.end('404 Not Found');
+      // Fall back to project root (e.g. /brand_assets/)
+      const fallbackPath = path.join(__dirname, urlPath);
+      fs.readFile(fallbackPath, (err2, data2) => {
+        if (err2) {
+          res.writeHead(404, { 'Content-Type': 'text/plain' });
+          res.end('404 Not Found');
+          return;
+        }
+        res.writeHead(200, { 'Content-Type': contentType });
+        res.end(data2);
+      });
       return;
     }
     res.writeHead(200, { 'Content-Type': contentType });

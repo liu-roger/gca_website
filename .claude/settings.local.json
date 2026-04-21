@@ -13,7 +13,9 @@
       "Bash(lsof -ti:3000)",
       "Bash(xargs kill:*)",
       "Bash(npm install:*)",
-      "Bash(node /Users/rogerliu/Documents/gca_website/index.js)"
+      "Bash(node /Users/rogerliu/Documents/gca_website/index.js)",
+      "Bash(git commit -m ':*)",
+      "Bash(git push:*)"
     ]
   }
 }
