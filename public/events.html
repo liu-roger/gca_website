@@ -302,7 +302,8 @@
     return escHtml(text)
       .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/_(.*?)_/g, '<em>$1</em>');
+      .replace(/_(.*?)_/g, '<em>$1</em>')
+      .replace(/~~(.*?)~~/g, '<span style="font-size:0.75rem;color:var(--fg-subtle)">$1</span>');
   }
 
   function renderBlocks(el) {
@@ -315,6 +316,11 @@
           if (b.type === 'text') {
             return b.content.split(/\n\n+/).map(function(para) {
               var trimmed = para.trim();
+
+              // Heading: paragraph starts with "# "
+              if (/^# /.test(trimmed)) {
+                return '<p style="font-size:1.15rem;font-weight:700;letter-spacing:-0.02em;line-height:1.3;color:var(--fg);margin-bottom:0.75rem;margin-top:0.5rem">' + formatInline(trimmed.slice(2)) + '</p>';
+              }
 
               // Bullet list: every line starts with "- "
               var lines = trimmed.split('\n');

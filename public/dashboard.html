@@ -957,6 +957,17 @@
     ta.focus();
   }
 
+  function applyHeading(ta) {
+    var val = ta.value;
+    var lineStart = val.lastIndexOf('\n', ta.selectionStart - 1) + 1;
+    var lineEnd   = val.indexOf('\n', ta.selectionEnd);
+    if (lineEnd === -1) lineEnd = val.length;
+    var line = val.slice(lineStart, lineEnd);
+    var newLine = /^# /.test(line) ? line.slice(2) : '# ' + line;
+    ta.setRangeText(newLine, lineStart, lineEnd, 'preserve');
+    ta.focus();
+  }
+
   function wireTextBlock(div) {
     var ta = div.querySelector('.block-textarea');
     div.querySelector('.block-remove').addEventListener('click', function() { div.remove(); });
@@ -965,6 +976,8 @@
     div.querySelector('.fmt-bold-italic').addEventListener('click', function() { applyFormat(ta, '***'); });
     div.querySelector('.fmt-bullet').addEventListener('click', function() { applyBullet(ta); });
     div.querySelector('.fmt-center').addEventListener('click', function() { applyFormat(ta, '::'); });
+    div.querySelector('.fmt-heading').addEventListener('click', function() { applyHeading(ta); });
+    div.querySelector('.fmt-caption').addEventListener('click', function() { applyFormat(ta, '~~'); });
     ta.addEventListener('keydown', function(e) {
       if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); applyFormat(ta, '**'); }
       if ((e.ctrlKey || e.metaKey) && e.key === 'i') { e.preventDefault(); applyFormat(ta, '_'); }
@@ -985,6 +998,8 @@
             '<button type="button" class="block-fmt-btn bold-italic fmt-bold-italic" title="Bold + Italic">B/I</button>' +
             '<button type="button" class="block-fmt-btn fmt-bullet" title="Bullet list">•</button>' +
             '<button type="button" class="block-fmt-btn fmt-center" title="Center">≡</button>' +
+            '<button type="button" class="block-fmt-btn fmt-heading" title="Heading">H</button>' +
+            '<button type="button" class="block-fmt-btn fmt-caption" title="Caption (small)">Aa</button>' +
           '</div>' +
           '<button type="button" class="block-remove">&#10005; Remove</button>' +
         '</div>' +
@@ -1149,6 +1164,8 @@
                   '<button type="button" class="block-fmt-btn bold-italic fmt-bold-italic" title="Bold + Italic">B/I</button>' +
                   '<button type="button" class="block-fmt-btn fmt-bullet" title="Bullet list">•</button>' +
                   '<button type="button" class="block-fmt-btn fmt-center" title="Center">≡</button>' +
+                  '<button type="button" class="block-fmt-btn fmt-heading" title="Heading">H</button>' +
+                  '<button type="button" class="block-fmt-btn fmt-caption" title="Caption (small)">Aa</button>' +
                 '</div>' +
                 '<button type="button" class="block-remove">&#10005; Remove</button>' +
               '</div>' +
