@@ -1,5 +1,15 @@
 const { db } = require('../_lib/firebase');
 
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+function formatPostDate(dateStr) {
+  if (typeof dateStr !== 'string') return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateStr.trim());
+  if (!m) return null;
+  const y = parseInt(m[1], 10), mo = parseInt(m[2], 10), d = parseInt(m[3], 10);
+  if (mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+  return MONTH_NAMES[mo - 1] + ' ' + d + ', ' + y;
+}
+
 function readBody(req) {
   return new Promise(resolve => {
     if (req.body && typeof req.body === 'object') return resolve(req.body);
@@ -30,12 +40,18 @@ module.exports = async function handler(req, res) {
   if (req.method === 'PUT') {
     const post = await readBody(req);
 
-    const required = ['title', 'category', 'excerpt', 'author'];
+    const required = ['title', 'category', 'excerpt', 'author', 'date'];
     for (const f of required) {
       if (!post[f] || !String(post[f]).trim()) {
         res.statusCode = 400;
         return res.end(JSON.stringify({ error: 'Missing field: ' + f }));
       }
+    }
+
+    const formattedDate = formatPostDate(post.date);
+    if (!formattedDate) {
+      res.statusCode = 400;
+      return res.end(JSON.stringify({ error: 'Invalid date' }));
     }
 
     const docRef = db.collection('posts').doc(String(id));
@@ -77,7 +93,7 @@ module.exports = async function handler(req, res) {
       category: String(post.category).trim(),
       excerpt:  String(post.excerpt).trim(),
       author:   String(post.author).trim(),
-      date:     existing.date,
+      date:     formattedDate,
       readTime: Math.max(1, Math.ceil(allText.trim().split(/\s+/).length / 200)) + ' min read',
       image,
       blocks,

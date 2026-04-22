@@ -492,6 +492,11 @@
           </div>
 
           <div class="field">
+            <label for="p-date">Post date <span style="color:var(--accent)">*</span></label>
+            <input id="p-date" type="date" />
+          </div>
+
+          <div class="field">
             <label for="p-excerpt">Excerpt <span style="color:var(--accent)">*</span> <span style="font-weight:400;color:var(--fg-subtle)">&mdash; shown on the blog index (1–2 sentences)</span></label>
             <textarea id="p-excerpt" rows="2" placeholder="A short summary that draws readers in&hellip;" maxlength="300"></textarea>
             <p class="char-count"><span id="excerpt-count">0</span> / 300</p>
@@ -756,6 +761,22 @@
   }
   bindCounter('p-title',   'title-count');
   bindCounter('p-excerpt', 'excerpt-count');
+
+  // Date helpers + default the date input to today
+  function isoToday() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function isoFromPostDate(dateStr) {
+    if (!dateStr) return isoToday();
+    var d = new Date(dateStr);
+    if (isNaN(d)) return isoToday();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  (function() {
+    var dateEl = document.getElementById('p-date');
+    if (dateEl) dateEl.value = isoToday();
+  })();
 
   // Focus styles
   document.querySelectorAll('#post-form input, #post-form select, #post-form textarea').forEach(function(el) {
@@ -1150,6 +1171,7 @@
     document.getElementById('p-title').value   = post.title   || '';
     document.getElementById('p-author').value  = post.author  || '';
     document.getElementById('p-excerpt').value = post.excerpt || '';
+    document.getElementById('p-date').value    = isoFromPostDate(post.date);
     document.getElementById('title-count').textContent   = (post.title   || '').length;
     document.getElementById('excerpt-count').textContent = (post.excerpt || '').length;
 
@@ -1284,6 +1306,7 @@
     document.getElementById('post-submit').textContent = 'Publish Post';
     form.querySelectorAll('input[type="text"]').forEach(function(el) { el.value = ''; });
     document.getElementById('p-category').value = '';
+    document.getElementById('p-date').value = isoToday();
     document.querySelectorAll('.cat-pill').forEach(function(p) { p.classList.remove('active'); });
     document.getElementById('title-count').textContent   = '0';
     document.getElementById('excerpt-count').textContent = '0';
@@ -1326,10 +1349,11 @@
     var category  = document.getElementById('p-category').value;
     var author    = document.getElementById('p-author').value.trim();
     var excerpt   = document.getElementById('p-excerpt').value.trim();
+    var date      = document.getElementById('p-date').value;
     var rawBlocks = editingId ? collectBlocksForEdit() : collectBlocks();
     var hasText   = rawBlocks.some(function(b) { return b.type === 'text'; });
 
-    if (!title || !category || !author || !excerpt || !hasText) {
+    if (!title || !category || !author || !excerpt || !date || !hasText) {
       gsap.fromTo(card, { x:0 }, { keyframes:{ x:[-6,6,-4,4,0] }, duration:0.35, ease:'power2.inOut' });
       return;
     }
@@ -1358,7 +1382,7 @@
 
       btn.textContent = editingId ? 'Saving…' : 'Publishing…';
 
-      var payload = { title:title, category:category, author:author, excerpt:excerpt, blocks:blocks };
+      var payload = { title:title, category:category, author:author, excerpt:excerpt, date:date, blocks:blocks };
       if (coverUrl) {
         payload.image = coverUrl;
       } else if (editingId && uploadArea.dataset.keepSrc) {
