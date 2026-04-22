@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About — Global Communication Association</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    /* ─── Layout tokens ─────────────────────────────────────────── */
+    main { position:relative; z-index:2; }
+    .wrap { max-width:1320px; margin:0 auto; padding:0 32px; }
+
+    /* ─── Eyebrow ────────────────────────────────────────────────── */
+    .eyebrow { font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--fg-subtle); display:inline-flex; align-items:center; gap:9px; }
+    .eyebrow::before { content:""; width:22px; height:1px; background:var(--fg-subtle); }
+    .ey-accent::before { background:var(--accent); }
+    .ey-accent { color:var(--accent-hi); }
+
+    /* ─── Reveal animation ──────────────────────────────────────── */
+    .rv { opacity:0; transform:translateY(14px); transition:opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+    .rv.in { opacity:1; transform:none; }
+
+    /* ─── HERO ──────────────────────────────────────────────────── */
+    .ab-hero { padding:148px 0 92px; position:relative; }
+    .ab-hero-grid { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); gap:64px; align-items:end; }
+    .ab-hero-meta { display:flex; gap:28px; flex-wrap:wrap; margin-bottom:44px; font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--fg-subtle); }
+    .ab-hero-meta span b { color:var(--fg); font-weight:500; }
+    .ab-hero h1 { font-family:var(--display); font-weight:400; font-size:clamp(60px,9vw,148px); letter-spacing:-.035em; line-height:.92; color:var(--fg); }
+    .ab-hero h1 em { font-style:italic; color:var(--accent-hi); }
+    .ab-hero h1 .soft { color:var(--fg-subtle); font-style:italic; }
+    .ab-hero h1 .amp { font-style:italic; color:var(--accent); padding:0 .06em; }
+    .ab-hero-sub { margin-top:30px; max-width:520px; font-size:16px; line-height:1.7; color:var(--fg-muted); }
+    .ab-hero-right { display:flex; flex-direction:column; gap:22px; padding-bottom:8px; }
+    .marker { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border:1px solid var(--border); background:rgba(255,255,255,.5); border-radius:3px; }
+    .marker .ml { font-family:var(--mono); font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-4); }
+    .marker .mv { font-family:var(--display); font-size:22px; letter-spacing:-.01em; color:var(--fg); }
+    .marker .coord { font-family:var(--mono); font-size:11.5px; color:var(--fg-muted); letter-spacing:.05em; }
+
+    /* Node graph */
+    .graph { position:relative; border:1px solid var(--border); background:#fbf9f3; aspect-ratio:4/5; border-radius:3px; overflow:hidden; }
+    .graph svg { width:100%; height:100%; display:block; }
+    .gc { position:absolute; font-family:var(--mono); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-4); }
+    .gc-tl { top:10px; left:12px; }
+    .gc-tr { top:10px; right:12px; color:var(--accent); }
+    .gc-bl { bottom:10px; left:12px; }
+    .gc-br { bottom:10px; right:12px; }
+
+    /* ─── LEDGER STRIP ──────────────────────────────────────────── */
+    .ledger { border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--bg-2); padding:18px 0; }
+    .led-in { display:grid; grid-template-columns:repeat(4,1fr); gap:32px; font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--fg-subtle); }
+    .led-in > div b { display:block; color:var(--fg); font-weight:500; margin-top:4px; letter-spacing:.08em; }
+
+    /* ─── §01 STATEMENT ─────────────────────────────────────────── */
+    .statement { padding:120px 0 110px; }
+    .st-grid { display:grid; grid-template-columns:1fr 2.1fr; gap:72px; align-items:start; }
+    .st-label { position:sticky; top:120px; display:flex; flex-direction:column; gap:18px; }
+    .st-label .sn { font-family:var(--display); font-size:44px; line-height:1; color:var(--accent); font-style:italic; }
+    .st-label .st { font-family:var(--mono); font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--fg-subtle); }
+    .st-body h2 { font-family:var(--display); font-weight:400; font-size:clamp(34px,4.2vw,58px); line-height:1.02; letter-spacing:-.02em; color:var(--fg); margin-bottom:36px; }
+    .st-body h2 em { font-style:italic; color:var(--accent-hi); }
+    .st-body p { font-size:16.5px; line-height:1.78; color:var(--fg-muted); margin-bottom:20px; max-width:62ch; }
+    .st-body p.lede { font-size:19px; line-height:1.68; color:var(--fg); }
+    .st-body .drop { float:left; font-family:var(--display); font-size:78px; line-height:.82; padding:8px 12px 0 0; color:var(--accent); }
+    .zh { font-size:15.5px; line-height:1.9; color:var(--fg-subtle); font-style:italic; margin-top:18px; padding-top:18px; border-top:1px dashed var(--border); }
+
+    /* ─── §02 SHENZHEN GRID ─────────────────────────────────────── */
+    .shen { padding:0 0 110px; }
+    .shen-top { padding-top:90px; border-top:1px solid var(--border); }
+    .shen-head { display:grid; grid-template-columns:1fr 1.6fr; gap:64px; align-items:end; margin-bottom:56px; }
+    .shen-head h2 { font-family:var(--display); font-weight:400; font-size:clamp(42px,5.2vw,76px); line-height:.98; letter-spacing:-.025em; color:var(--fg); }
+    .shen-head h2 em { font-style:italic; color:var(--accent); }
+    .shen-head p { font-size:15.5px; line-height:1.75; color:var(--fg-muted); max-width:52ch; padding-bottom:10px; }
+    .shen-grid { display:grid; grid-template-columns:repeat(12,1fr); gap:0; border-top:1px solid var(--border); border-left:1px solid var(--border); }
+    .cell { grid-column:span 4; padding:36px 32px 44px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); background:transparent; transition:background .25s; }
+    .cell:hover { background:rgba(255,255,255,.55); }
+    .cell.wide { grid-column:span 6; }
+    .cell.narrow { grid-column:span 3; }
+    .cell-n { font-family:var(--mono); font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-4); margin-bottom:20px; display:flex; justify-content:space-between; }
+    .cell-n .acc { color:var(--accent); }
+    .cell h3 { font-family:var(--display); font-size:30px; line-height:1.05; letter-spacing:-.01em; color:var(--fg); font-weight:400; margin-bottom:12px; }
+    .cell p { font-size:14px; line-height:1.72; color:var(--fg-muted); }
+    .cell .ctag { display:inline-flex; align-items:center; gap:7px; font-family:var(--mono); font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:var(--accent); margin-top:16px; }
+    .cell .ctag::before { content:""; width:14px; height:1px; background:var(--accent); }
+
+    /* ─── PULL QUOTE ────────────────────────────────────────────── */
+    .pquote { padding:120px 0; background:var(--fg); color:#f6f2e8; position:relative; overflow:hidden; }
+    .pquote::before { content:""; position:absolute; inset:0; background:radial-gradient(1200px 500px at 20% 0%, rgba(123,63,160,.28), transparent 60%),radial-gradient(900px 400px at 90% 100%, rgba(123,63,160,.18), transparent 60%); pointer-events:none; }
+    .pq-in { position:relative; max-width:1100px; margin:0 auto; padding:0 32px; }
+    .pq-mark { font-family:var(--display); font-style:italic; font-size:220px; line-height:.8; color:var(--accent); opacity:.6; }
+    .pq-in blockquote { font-family:var(--display); font-weight:400; font-style:italic; font-size:clamp(36px,4.2vw,62px); line-height:1.08; letter-spacing:-.01em; color:#f6f2e8; margin:-28px 0 32px; max-width:22ch; }
+    .pq-in blockquote em { color:#d7b5ea; }
+    .pq-cite { font-family:var(--mono); font-size:11.5px; letter-spacing:.18em; text-transform:uppercase; color:rgba(246,242,232,.55); display:flex; align-items:center; gap:14px; }
+    .pq-cite::before { content:""; width:34px; height:1px; background:rgba(246,242,232,.3); }
+
+    /* ─── §03 CADENCE ───────────────────────────────────────────── */
+    .cadence { padding:120px 0; }
+    .cad-head { display:flex; justify-content:space-between; align-items:flex-end; gap:40px; margin-bottom:56px; }
+    .cad-head h2 { font-family:var(--display); font-weight:400; font-size:clamp(42px,5vw,72px); line-height:.98; letter-spacing:-.025em; color:var(--fg); max-width:18ch; }
+    .cad-head h2 em { font-style:italic; color:var(--accent); }
+    .cad-side { font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--fg-subtle); max-width:26ch; text-align:right; }
+    .track { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid var(--border); }
+    .tr { padding:28px 24px 36px; border-right:1px solid var(--border); position:relative; }
+    .tr:last-child { border-right:none; }
+    .tr .tnum { font-family:var(--display); font-size:80px; line-height:.9; color:var(--accent); font-style:italic; margin-bottom:18px; letter-spacing:-.03em; }
+    .tr h4 { font-family:var(--display); font-size:26px; font-weight:400; letter-spacing:-.01em; color:var(--fg); margin-bottom:10px; line-height:1.1; }
+    .tr p { font-size:14px; line-height:1.7; color:var(--fg-muted); }
+    .tr .ttime { position:absolute; top:28px; right:24px; font-family:var(--mono); font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:var(--ink-4); }
+
+    /* ─── §04 CHAPTER CARD ──────────────────────────────────────── */
+    .chapter { padding:0 0 120px; }
+    .ch-card { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--border); background:#fbf9f3; border-radius:4px; overflow:hidden; }
+    .ch-left { padding:52px 48px; }
+    .ch-left h3 { font-family:var(--display); font-weight:400; font-size:48px; line-height:1; letter-spacing:-.02em; color:var(--fg); margin:18px 0 18px; }
+    .ch-left h3 em { font-style:italic; color:var(--accent); }
+    .ch-left p { font-size:15px; line-height:1.75; color:var(--fg-muted); max-width:44ch; margin-bottom:22px; }
+    .ch-meta { display:grid; grid-template-columns:1fr 1fr; gap:18px; padding-top:22px; border-top:1px solid var(--border); }
+    .ch-meta > div b { display:block; font-family:var(--display); font-size:26px; color:var(--fg); letter-spacing:-.01em; margin-bottom:2px; font-weight:400; }
+    .ch-meta > div span { font-family:var(--mono); font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-4); }
+    .ch-right { position:relative; border-left:1px solid var(--border); background:repeating-linear-gradient(135deg, rgba(123,63,160,.06) 0 2px, transparent 2px 14px), #f3ede0; min-height:420px; }
+    .ch-right .pill { position:absolute; top:24px; left:24px; font-family:var(--mono); font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--fg-subtle); background:rgba(255,255,255,.7); padding:6px 10px; border:1px solid var(--border); border-radius:3px; }
+    .ch-right .mono-note { position:absolute; bottom:24px; left:24px; right:24px; font-family:var(--mono); font-size:11px; letter-spacing:.02em; color:var(--fg-subtle); line-height:1.7; }
+    .ch-right .mono-note b { color:var(--accent); }
+    .ch-svg { position:absolute; inset:0; }
+
+    /* ─── §05 APPLICATION FORM ──────────────────────────────────── */
+    .apply { padding:110px 0 130px; border-top:1px solid var(--border); background:linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%); }
+    .apply-grid { display:grid; grid-template-columns:1fr 1.15fr; gap:72px; align-items:start; }
+    .apply-side { position:sticky; top:110px; }
+    .apply-side h2 { font-family:var(--display); font-weight:400; font-size:clamp(42px,5vw,72px); line-height:.98; letter-spacing:-.025em; color:var(--fg); margin-bottom:26px; }
+    .apply-side h2 em { font-style:italic; color:var(--accent-hi); }
+    .apply-lede { font-size:16px; line-height:1.75; color:var(--fg-muted); max-width:44ch; margin-bottom:32px; }
+    .apply-steps { list-style:none; display:flex; flex-direction:column; gap:14px; margin-bottom:32px; padding:22px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+    .apply-steps li { display:flex; align-items:center; gap:16px; font-size:14px; color:var(--fg-muted); }
+    .apply-steps .sn { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%; border:1px solid var(--accent-line); background:var(--accent-dim); color:var(--accent-hi); font-family:var(--mono); font-size:10px; font-weight:500; letter-spacing:.04em; flex-shrink:0; }
+    .apply-meta { display:flex; align-items:center; gap:10px; font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--fg-subtle); flex-wrap:wrap; }
+    .apply-meta i { width:4px; height:4px; border-radius:50%; background:var(--ink-4); display:inline-block; font-style:normal; }
+
+    .apply-form { background:#fbf9f3; border:1px solid var(--border); border-radius:4px; padding:36px 36px 30px; position:relative; box-shadow:0 1px 0 rgba(0,0,0,.02), 0 24px 60px -32px rgba(20,18,15,.18); }
+    .af-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; padding-bottom:22px; margin-bottom:22px; border-bottom:1px solid var(--border); }
+    .af-file { display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-4); margin-bottom:8px; }
+    .af-title h3 { font-family:var(--display); font-weight:400; font-size:32px; line-height:1.05; letter-spacing:-.02em; color:var(--fg); }
+    .af-badge { font-family:var(--mono); font-size:10px; font-weight:500; letter-spacing:.18em; text-transform:uppercase; color:var(--accent-hi); background:var(--accent-dim); border:1px solid var(--accent-line); padding:6px 11px; border-radius:100px; flex-shrink:0; }
+    .af-row { display:grid; gap:16px; margin-bottom:18px; }
+    .af-row-2 { grid-template-columns:1fr 1fr; }
+    .af-field { display:flex; flex-direction:column; gap:8px; margin-bottom:18px; position:relative; }
+    .af-label { display:flex; align-items:center; gap:10px; font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--fg-subtle); }
+    .af-label i { font-style:normal; font-family:var(--mono); font-size:10px; color:var(--accent); letter-spacing:.08em; }
+    .af-field input, .af-field textarea, .af-field select { width:100%; font-family:var(--ff); font-size:15px; color:var(--fg); background:#fff; border:1px solid var(--border); border-radius:3px; padding:13px 14px; outline:none; transition:border-color .18s ease, box-shadow .18s ease, background .18s ease; }
+    .af-field textarea { resize:vertical; min-height:160px; line-height:1.65; }
+    .af-field input::placeholder, .af-field textarea::placeholder { color:var(--ink-4); }
+    .af-field input:hover, .af-field textarea:hover, .af-field select:hover { border-color:var(--fg-subtle); }
+    .af-field input:focus, .af-field textarea:focus, .af-field select:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-dim); }
+    .af-field.invalid input, .af-field.invalid textarea, .af-field.invalid select { border-color:#b54a4a; background:#fcf4f2; }
+    .af-sel { position:relative; }
+    .af-sel select { appearance:none; -webkit-appearance:none; padding-right:38px; cursor:pointer; }
+    .af-sel .af-caret { position:absolute; right:14px; top:50%; transform:translateY(-50%); font-size:12px; color:var(--fg-subtle); pointer-events:none; }
+    .af-count { align-self:flex-end; font-family:var(--mono); font-size:10px; letter-spacing:.12em; color:var(--ink-4); margin-top:2px; }
+    .af-count.over { color:var(--accent); }
+    .af-foot { display:flex; justify-content:space-between; align-items:center; gap:20px; padding:22px 0 4px; margin-top:18px; border-top:1px solid var(--border); background:transparent; flex-wrap:wrap; }
+    .af-fine { font-size:12px; line-height:1.55; color:var(--ink-4); max-width:30ch; }
+    .af-submit { display:inline-flex; align-items:center; gap:16px; padding:14px 22px; background:var(--fg); color:var(--bg); border:none; border-radius:3px; cursor:pointer; font-family:var(--ff); font-size:14px; font-weight:500; transition:background .2s ease, transform .2s ease; }
+    .af-submit b { font-family:var(--display); font-size:20px; font-weight:400; letter-spacing:-.01em; white-space:nowrap; }
+    .af-submit .ar { font-family:var(--mono); font-size:13px; letter-spacing:.05em; transition:transform .2s ease; }
+    .af-submit:hover { background:var(--accent-hi); }
+    .af-submit:hover .ar { transform:translateX(4px); }
+    .af-submit:active { transform:scale(.98); }
+    .af-submit:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+    .af-submit:disabled { opacity:.5; cursor:not-allowed; }
+    .af-success { margin-top:22px; padding:18px; border:1px solid var(--accent-line); background:var(--accent-dim); border-radius:3px; display:flex; gap:14px; align-items:flex-start; }
+    .af-success[hidden] { display:none; }
+    .af-check { width:30px; height:30px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; flex-shrink:0; }
+    .af-success b { display:block; font-family:var(--display); font-size:20px; color:var(--fg); font-weight:400; letter-spacing:-.01em; margin-bottom:2px; }
+    .af-success p { font-size:13.5px; color:var(--fg-muted); line-height:1.6; }
+
+    /* ─── Responsive ─────────────────────────────────────────────── */
+    @media (max-width:1100px) {
+      .ab-hero-grid { grid-template-columns:1fr; gap:40px; }
+      .st-grid { grid-template-columns:1fr; gap:28px; }
+      .st-label { position:static; flex-direction:row; align-items:center; }
+      .shen-head { grid-template-columns:1fr; gap:24px; }
+      .shen-grid { grid-template-columns:repeat(6,1fr); }
+      .cell, .cell.wide, .cell.narrow { grid-column:span 6; }
+      .cad-head { flex-direction:column; align-items:flex-start; }
+      .cad-side { text-align:left; }
+      .track { grid-template-columns:repeat(2,1fr); }
+      .tr { border-right:none; border-bottom:1px solid var(--border); }
+      .tr:nth-child(odd) { border-right:1px solid var(--border); }
+      .ch-card { grid-template-columns:1fr; }
+      .ch-right { border-left:none; border-top:1px solid var(--border); min-height:300px; }
+      .apply-grid { grid-template-columns:1fr; gap:36px; }
+      .apply-side { position:static; }
+      .af-foot { align-items:stretch; }
+      .af-submit { justify-content:space-between; }
+      .led-in { grid-template-columns:repeat(2,1fr); gap:20px; }
+    }
+    @media (max-width:640px) {
+      .wrap { padding:0 20px; }
+      .ab-hero { padding:128px 0 68px; }
+      .af-row-2 { grid-template-columns:1fr; }
+      .apply-form { padding:26px 22px 22px; }
+      .tr { border-right:none !important; }
+      .ch-left { padding:36px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Grain overlay -->
+<svg class="grain" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" preserveAspectRatio="none">
+  <filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 0.08  0 0 0 0 0.07  0 0 0 0 0.06  0 0 0 .45 0"/></filter>
+  <rect width="100%" height="100%" filter="url(#n)"/>
+</svg>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo" aria-label="GCA Home">
+      <img src="/brand_assets/GCA Logo.png" alt="GCA Logo" />
+      <span class="nav-logo-name">Global Communication<br>Association</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="/about.html" style="color:var(--fg)">About</a></li>
+      <li><a href="#cadence">Programs</a></li>
+      <li><a href="#chapter">Chapter</a></li>
+      <li><a href="/events.html">Events</a></li>
+      <li><a href="#join">Join</a></li>
+    </ul>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a href="/members.html" class="btn btn-sm btn-outline" style="border-color:var(--accent);color:var(--accent)" id="nav-login-btn">Login</a>
+      <a href="#join" class="btn btn-sm btn-primary">Join GCA</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════ HERO ═══════════════════════════════ -->
+<section class="ab-hero">
+  <div class="wrap">
+    <div class="ab-hero-meta rv">
+      <span>Vol. 01 &middot; <b>Intro</b></span>
+      <span>Est. &nbsp;<b>2025</b></span>
+      <span>Shenzhen &nbsp;<b>22.54°N · 114.06°E</b></span>
+    </div>
+    <div class="ab-hero-grid">
+      <div>
+        <h1 class="rv">Brilliant minds<br/><em>deserve</em> <span class="soft">to be</span><br/>connected<span class="amp">.</span></h1>
+        <p class="ab-hero-sub rv">GCA is a non-profit, non-political global network dedicated to connecting scholars, professionals, and industry leaders — turning meaningful dialogue into impactful action.</p>
+      </div>
+      <div class="ab-hero-right rv">
+        <!-- Node graph -->
+        <div class="graph" aria-hidden="true">
+          <div class="gc gc-tl">Fig. 01</div>
+          <div class="gc gc-tr">● Live</div>
+          <div class="gc gc-bl">22.54°N · 114.06°E</div>
+          <div class="gc gc-br">Nodes · 20+</div>
+          <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+                <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#d9d3c5" stroke-width=".5"/>
+              </pattern>
+            </defs>
+            <rect width="400" height="500" fill="url(#grid)" opacity=".6"/>
+            <!-- Connection lines -->
+            <g stroke="#c8bfac" stroke-width=".8" opacity=".6">
+              <line x1="200" y1="250" x2="80"  y2="110"/>
+              <line x1="200" y1="250" x2="330" y2="140"/>
+              <line x1="200" y1="250" x2="60"  y2="340"/>
+              <line x1="200" y1="250" x2="340" y2="360"/>
+              <line x1="200" y1="250" x2="180" y2="60"/>
+              <line x1="200" y1="250" x2="220" y2="430"/>
+              <line x1="200" y1="250" x2="300" y2="250"/>
+              <line x1="200" y1="250" x2="100" y2="250"/>
+              <line x1="80"  y1="110" x2="180" y2="60"/>
+              <line x1="330" y1="140" x2="300" y2="250"/>
+              <line x1="60"  y1="340" x2="100" y2="250"/>
+              <line x1="340" y1="360" x2="220" y2="430"/>
+            </g>
+            <!-- Satellite nodes -->
+            <g fill="#e9e3d3" stroke="#c8bfac" stroke-width="1">
+              <circle cx="80"  cy="110" r="5"/>
+              <circle cx="330" cy="140" r="5"/>
+              <circle cx="60"  cy="340" r="5"/>
+              <circle cx="340" cy="360" r="5"/>
+              <circle cx="180" cy="60"  r="5"/>
+              <circle cx="220" cy="430" r="5"/>
+              <circle cx="300" cy="250" r="5"/>
+              <circle cx="100" cy="250" r="5"/>
+            </g>
+            <!-- Centre node -->
+            <circle cx="200" cy="250" r="14" fill="#7B3FA0" opacity=".18"/>
+            <circle cx="200" cy="250" r="8"  fill="#7B3FA0"/>
+            <circle cx="200" cy="250" r="4"  fill="#fff"/>
+            <!-- Label -->
+            <text x="215" y="246" font-family="'JetBrains Mono',monospace" font-size="9" fill="#6c6558" letter-spacing=".14em" text-transform="uppercase">SHENZHEN</text>
+          </svg>
+        </div>
+        <!-- Location marker -->
+        <div class="marker">
+          <div>
+            <div class="ml">Inaugural Chapter</div>
+            <div class="mv">Shenzhen</div>
+          </div>
+          <div class="coord">22.54°N · 114.06°E</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ LEDGER STRIP ══════════════════════ -->
+<div class="ledger">
+  <div class="wrap">
+    <div class="led-in">
+      <div>Status<b>Non-profit · Non-political</b></div>
+      <div>Reach<b>10+ Countries represented</b></div>
+      <div>Home<b>Shenzhen · Mainland China</b></div>
+      <div>Purpose<b>To connect, convene, advance</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ §01 WHO WE ARE ════════════════════ -->
+<section class="statement">
+  <div class="wrap">
+    <div class="st-grid">
+      <aside class="st-label rv">
+        <div class="sn">§ 01</div>
+        <div class="st">Who we are</div>
+      </aside>
+      <div class="st-body">
+        <h2 class="rv">When <em>visionary</em> individuals unite,<br/>extraordinary outcomes follow.</h2>
+        <p class="lede rv">
+          <span class="drop">G</span>CA is a non-profit, non-political global network dedicated to connecting scholars, professionals, and industry leaders worldwide. Humans are social by nature — our greatest ideas are rarely born in isolation.
+        </p>
+        <p class="rv">At GCA, we believe that brilliant minds deserve to be connected, because when visionary individuals unite, extraordinary outcomes follow. Our mission is simple: to connect people across borders, cultures, and disciplines — turning meaningful dialogue into impactful actions that advances humanity.</p>
+        <p class="rv">We bridge the gap between rigorous scholarship and real-world practice — convening minds across journalism, public relations, digital media, linguistics, and intercultural communication to address the most urgent communicative challenges of our era.</p>
+        <p class="zh rv">GCA（Global Communication Association，国际交流协会）致力于汇聚全球学者、专业人士与行业领袖。人类生而具有社会属性——伟大的创想往往在群星闪耀时诞生。我们的使命很简单：打破地域、文化与领域的界限，将深刻对话转化为推动人类进步的切实行动。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ §02 ON THE GROUND ════════════════ -->
+<section class="shen">
+  <div class="shen-top wrap">
+    <div class="shen-head">
+      <div class="rv">
+        <div class="eyebrow ey-accent" style="margin-bottom:18px">§ 02 — On the ground</div>
+        <h2>A chapter<br/>made <em>in Shenzhen.</em></h2>
+      </div>
+      <p class="rv">Our chapter lives inside Shenzhen — one of the world's most dynamic cities for technology, design, and cross-cultural exchange. We run programs that step off campus on purpose, bringing students and professionals together in labs, galleries, studios, and the neighborhoods in between.</p>
+    </div>
+    <div class="shen-grid rv">
+      <div class="cell wide">
+        <div class="cell-n"><span>A · 01</span><span class="acc">Integration</span></div>
+        <h3>Anchored to the campus. Open to the city.</h3>
+        <p>Our chapter sits inside a district of founders, researchers, and operators. We run programs that step off campus on purpose — into labs, galleries, studios, and the ordinary neighborhoods in between.</p>
+        <div class="ctag">Bridge programming</div>
+      </div>
+      <div class="cell narrow">
+        <div class="cell-n"><span>A · 02</span><span>Dialogue</span></div>
+        <h3>Cultural exchange nights.</h3>
+        <p>Evenings built around food, music, and unhurried conversation. Members host in rotation — no panel, no podium.</p>
+      </div>
+      <div class="cell narrow">
+        <div class="cell-n"><span>A · 03</span><span>Learning</span></div>
+        <h3>Workshops &amp; seminars.</h3>
+        <p>Practical skill sessions: public speaking, intercultural communication, media literacy — taught by members for members.</p>
+      </div>
+      <div class="cell">
+        <div class="cell-n"><span>A · 04</span><span>People</span></div>
+        <h3>Speaker series.</h3>
+        <p>Scholars, journalists, and practitioners from inside and outside the university, in small rooms where questions still fit.</p>
+        <div class="ctag">Quarterly cadence</div>
+      </div>
+      <div class="cell">
+        <div class="cell-n"><span>A · 05</span><span>Belonging</span></div>
+        <h3>Networking socials.</h3>
+        <p>Casual get-togethers with fellow members from 10+ countries — right on campus, and out in the city.</p>
+        <div class="ctag">Members from 10+ countries</div>
+      </div>
+      <div class="cell">
+        <div class="cell-n"><span>A · 06</span><span class="acc">Mission</span></div>
+        <h3>Dialogue into action.</h3>
+        <p>We measure ourselves by what members take away and put to work — not by attendance, not by posts, not by decks.</p>
+        <div class="ctag">Outcome-led</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ PULL QUOTE ════════════════════════ -->
+<section class="pquote">
+  <div class="pq-in">
+    <div class="pq-mark rv">&ldquo;</div>
+    <blockquote class="rv">Our mission is simple: to connect people across borders, cultures, and disciplines — turning meaningful dialogue into <em>impactful action</em> that advances humanity.</blockquote>
+    <div class="pq-cite rv">GCA Mission Statement &mdash; 2025</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ §03 CADENCE ══════════════════════ -->
+<section class="cadence" id="cadence">
+  <div class="wrap">
+    <div class="cad-head">
+      <div class="rv">
+        <div class="eyebrow" style="margin-bottom:18px">§ 03 — What a term looks like</div>
+        <h2>A slow, steady <em>cadence</em> of gatherings.</h2>
+      </div>
+      <p class="cad-side rv">An academic year of GCA is small on hype, long on hours spent together.</p>
+    </div>
+    <div class="track rv">
+      <div class="tr">
+        <span class="ttime">Week 01 — 03</span>
+        <div class="tnum">I</div>
+        <h4>Arrive &amp; be known.</h4>
+        <p>New members are matched with returning ones. First week is for introductions — not performance.</p>
+      </div>
+      <div class="tr">
+        <span class="ttime">Monthly</span>
+        <div class="tnum">II</div>
+        <h4>Exchange nights.</h4>
+        <p>One evening a month. A country, a cuisine, a story from home — hosted by members in rotation.</p>
+      </div>
+      <div class="tr">
+        <span class="ttime">Quarterly</span>
+        <div class="tnum">III</div>
+        <h4>Speakers &amp; panels.</h4>
+        <p>Small-room talks with academics, journalists, and Shenzhen-based practitioners. Questions outnumber slides.</p>
+      </div>
+      <div class="tr">
+        <span class="ttime">Term-end</span>
+        <div class="tnum">IV</div>
+        <h4>Into the city.</h4>
+        <p>A closing program that takes the chapter off campus — a studio visit, a neighborhood walk, a shared meal.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ §04 CHAPTER CARD ═════════════════ -->
+<section class="chapter" id="chapter">
+  <div class="wrap">
+    <div class="ch-card rv">
+      <div class="ch-left">
+        <div class="eyebrow ey-accent">§ 04 — Inaugural chapter</div>
+        <h3>Shenzhen<br/><em>— a place to begin.</em></h3>
+        <p>Our inaugural chapter is rooted in Shenzhen — a city built on openness, speed, and the conviction that great things happen when you bring the right people together. It is the right place to start.</p>
+        <div class="ch-meta">
+          <div><b>Shenzhen</b><span>Location</span></div>
+          <div><b>2025</b><span>Founded</span></div>
+          <div><b>20+</b><span>Active members</span></div>
+          <div><b>10+</b><span>Nationalities</span></div>
+        </div>
+      </div>
+      <div class="ch-right" aria-hidden="true">
+        <div class="pill">Map · Sketch</div>
+        <svg class="ch-svg" viewBox="0 0 500 420" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <pattern id="g2" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#c8bfac" stroke-width=".4" opacity=".55"/>
+            </pattern>
+          </defs>
+          <rect width="500" height="420" fill="url(#g2)"/>
+          <path d="M 0 260 C 80 230, 140 260, 200 240 S 320 200, 380 220 S 500 200, 500 200 L 500 420 L 0 420 Z" fill="#e6dfce" opacity=".7"/>
+          <path d="M 0 260 C 80 230, 140 260, 200 240 S 320 200, 380 220 S 500 200, 500 200" fill="none" stroke="#9a9383" stroke-width=".8" stroke-dasharray="1 4"/>
+          <!-- Roads -->
+          <line x1="50" y1="0" x2="50" y2="420" stroke="#d9d3c5" stroke-width=".6"/>
+          <line x1="150" y1="0" x2="150" y2="420" stroke="#d9d3c5" stroke-width=".6"/>
+          <line x1="300" y1="0" x2="300" y2="420" stroke="#d9d3c5" stroke-width=".6"/>
+          <line x1="420" y1="0" x2="420" y2="420" stroke="#d9d3c5" stroke-width=".6"/>
+          <line x1="0" y1="100" x2="500" y2="100" stroke="#d9d3c5" stroke-width=".6"/>
+          <line x1="0" y1="200" x2="500" y2="200" stroke="#d9d3c5" stroke-width=".6"/>
+          <line x1="0" y1="320" x2="500" y2="320" stroke="#d9d3c5" stroke-width=".6"/>
+          <!-- Location pin -->
+          <line x1="260" y1="220" x2="260" y2="120" stroke="#7B3FA0" stroke-width=".8"/>
+          <circle cx="260" cy="210" r="16" fill="#7B3FA0" opacity=".12"/>
+          <circle cx="260" cy="210" r="8"  fill="#7B3FA0"/>
+          <circle cx="260" cy="210" r="3"  fill="#fff"/>
+          <!-- Label -->
+          <text x="276" y="206" font-family="'JetBrains Mono',monospace" font-size="9" fill="#4a2363" letter-spacing=".12em">SHENZHEN</text>
+        </svg>
+        <div class="mono-note">Not to scale. A chapter is a posture, not a pin — <b>begin here, then outward.</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ §05 APPLICATION ══════════════════ -->
+<section class="apply" id="join">
+  <div class="wrap">
+    <div class="apply-grid">
+      <aside class="apply-side rv">
+        <div class="eyebrow ey-accent" style="margin-bottom:22px">§ 05 — Membership</div>
+        <h2>Come in. <em>Stay a while.</em><br/>Leave different.</h2>
+        <p class="apply-lede">GCA membership is open to scholars, practitioners, educators, and anyone committed to building genuine cross-cultural connections. There are no fees — applying is completely free.</p>
+        <ul class="apply-steps">
+          <li><span class="sn">01</span><span>Fill out the form</span></li>
+          <li><span class="sn">02</span><span>We review your background &amp; interests</span></li>
+          <li><span class="sn">03</span><span>Hear back within 10 business days</span></li>
+        </ul>
+        <div class="apply-meta">
+          <span>No fee</span><i></i>
+          <span>Rolling intake</span><i></i>
+          <span>10 working days</span>
+        </div>
+      </aside>
+
+      <form id="apply-form" class="apply-form rv" novalidate>
+        <header class="af-head">
+          <div class="af-title">
+            <span class="af-file">GCA / Form 01</span>
+            <h3>Application for Membership</h3>
+          </div>
+          <span class="af-badge">Free</span>
+        </header>
+
+        <div class="af-row af-row-2">
+          <label class="af-field">
+            <span class="af-label"><i>01</i>First name</span>
+            <input id="f-first" type="text" placeholder="Jane" required />
+          </label>
+          <label class="af-field">
+            <span class="af-label"><i>02</i>Last name</span>
+            <input id="f-last" type="text" placeholder="Smith" required />
+          </label>
+        </div>
+
+        <label class="af-field">
+          <span class="af-label"><i>03</i>Email address</span>
+          <input id="f-email" type="email" placeholder="jane@university.edu" required />
+        </label>
+
+        <label class="af-field">
+          <span class="af-label"><i>04</i>Organization / Institution</span>
+          <input id="f-org" type="text" placeholder="University or employer" />
+        </label>
+
+        <div class="af-field">
+          <span class="af-label"><i>05</i>Your role</span>
+          <div class="af-sel">
+            <select id="f-role">
+              <option value="" disabled selected>Select one&hellip;</option>
+              <option>Academic / Researcher</option>
+              <option>Student</option>
+              <option>Journalist / Media Professional</option>
+              <option>Practitioner / Consultant</option>
+              <option>Policy / Government</option>
+              <option>Other</option>
+            </select>
+            <span class="af-caret">▾</span>
+          </div>
+        </div>
+
+        <label class="af-field" style="margin-bottom:6px">
+          <span class="af-label"><i>06</i>Why do you want to join GCA?</span>
+          <textarea id="f-why" rows="6" placeholder="Share your interest or area of focus…" maxlength="1200"></textarea>
+          <span class="af-count" id="why-count">0 / 1200</span>
+        </label>
+
+        <footer class="af-foot">
+          <p class="af-fine">By submitting, you consent to GCA contacting you about your application.</p>
+          <button type="submit" class="af-submit" id="apply-submit">
+            <b>Submit application</b><span class="ar">↗</span>
+          </button>
+        </footer>
+
+        <div class="af-success" hidden id="apply-success">
+          <div class="af-check">✓</div>
+          <div>
+            <b>Application received.</b>
+            <p>Thank you — we'll be in touch within 10 business days.</p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="site">
+  <div class="foot-inner">
+    <div class="foot-top">
+      <div>
+        <div class="foot-logo"><img src="/brand_assets/GCA Logo.png" alt="GCA" /><span class="foot-logo-name">Global Communication<br>Association</span></div>
+        <p class="foot-tag">Uniting great minds for global good since 2025. A nonprofit dedicated to advancing communication worldwide.</p>
+      </div>
+      <div class="foot-col"><h4>Organization</h4><ul><li><a href="/about.html">About GCA</a></li><li><a href="/#pillars">Our Pillars</a></li><li><a href="/events.html">Events</a></li><li><a href="#join">Join GCA</a></li></ul></div>
+      <div class="foot-col"><h4>Events</h4><ul><li><a href="/events.html">Cultural Exchange</a></li><li><a href="/events.html">Speaker Series</a></li><li><a href="/events.html">Networking</a></li><li><a href="/events.html">Workshops</a></li></ul></div>
+      <div class="foot-col"><h4>Membership</h4><ul><li><a href="#join">Apply to Join</a></li><li><a href="/#community">Our Community</a></li><li><a href="/members.html">Member Login</a></li></ul></div>
+    </div>
+    <div class="foot-bottom">
+      <p>&copy; 2026 Global Communication Association. All rights reserved.</p>
+      <div class="foot-legal"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a></div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script src="/api/firebase-config"></script>
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
+  const auth = getAuth(initializeApp(window.firebaseConfig));
+  onAuthStateChanged(auth, function(user) {
+    var btn = document.getElementById('nav-login-btn');
+    if (user && btn) { btn.textContent = 'Dashboard'; btn.href = '/dashboard.html'; }
+  });
+</script>
+<script>
+(function() {
+  // Scroll-reveal
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.rv').forEach(function(el) { obs.observe(el); });
+
+  // Character counter
+  var why = document.getElementById('f-why');
+  var cnt = document.getElementById('why-count');
+  if (why && cnt) {
+    why.addEventListener('input', function() {
+      var n = why.value.length;
+      cnt.textContent = n + ' / 1200';
+      cnt.classList.toggle('over', n >= 1200);
+    });
+  }
+
+  // Application form submit
+  var form    = document.getElementById('apply-form');
+  var btn     = document.getElementById('apply-submit');
+  var success = document.getElementById('apply-success');
+  if (form) {
+    // Focus ring styles
+    form.querySelectorAll('input, select, textarea').forEach(function(el) {
+      el.addEventListener('focus', function() { el.style.borderColor = 'var(--accent)'; el.style.boxShadow = '0 0 0 3px var(--accent-dim)'; });
+      el.addEventListener('blur',  function() { el.style.borderColor = ''; el.style.boxShadow = ''; });
+    });
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var first = document.getElementById('f-first').value.trim();
+      var last  = document.getElementById('f-last').value.trim();
+      var email = document.getElementById('f-email').value.trim();
+
+      // Mark invalid
+      ['f-first','f-last','f-email'].forEach(function(id) {
+        var el = document.getElementById(id);
+        var field = el.closest('.af-field');
+        if (field) field.classList.toggle('invalid', !el.value.trim());
+      });
+
+      if (!first || !last || !email) {
+        if (typeof gsap !== 'undefined') {
+          gsap.fromTo(form, { x:0 }, { keyframes:{ x:[-6,6,-4,4,0] }, duration:0.35, ease:'power2.inOut' });
+        }
+        return;
+      }
+
+      btn.disabled = true;
+      btn.querySelector('b').textContent = 'Submitting…';
+
+      fetch('/api/applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: first,
+          lastName:  last,
+          email:     email,
+          org:       document.getElementById('f-org').value  || '',
+          role:      document.getElementById('f-role').value || '',
+          why:       document.getElementById('f-why').value  || '',
+        }),
+      })
+      .then(function() {
+        form.querySelectorAll('input, select, textarea').forEach(function(el) { el.disabled = true; });
+        btn.style.display = 'none';
+        success.removeAttribute('hidden');
+      })
+      .catch(function() {
+        btn.disabled = false;
+        btn.querySelector('b').textContent = 'Submit application';
+        alert('Something went wrong. Please try again.');
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>
