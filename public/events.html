@@ -172,8 +172,26 @@
       <li><a href="/events.html" style="color:var(--fg)">Events</a></li>
       <li><a href="/#join">Join</a></li>
     </ul>
-    <div style="display:flex;gap:8px;align-items:center">
+    <div class="nav-cta">
       <a href="/members.html" class="btn btn-sm btn-outline" style="border-color:var(--accent);color:var(--accent)" id="nav-login-btn">Login</a>
+      <a href="/#join" class="btn btn-sm btn-primary">Join GCA</a>
+    </div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <ul class="mobile-menu-links">
+      <li><a href="/">About</a></li>
+      <li><a href="/#cadence">Programs</a></li>
+      <li><a href="/#chapter">Chapter</a></li>
+      <li><a href="/events.html" class="active">Events</a></li>
+      <li><a href="/#join">Join</a></li>
+    </ul>
+    <div class="mobile-menu-cta">
+      <a href="/members.html" class="btn btn-sm btn-outline" style="border-color:var(--accent);color:var(--accent)" id="nav-login-btn-mobile">Login</a>
       <a href="/#join" class="btn btn-sm btn-primary">Join GCA</a>
     </div>
   </div>
@@ -272,7 +290,9 @@
   onAuthStateChanged(auth, function(user) {
     currentUser = user;
     var loginBtn = document.getElementById('nav-login-btn');
+    var loginBtnMobile = document.getElementById('nav-login-btn-mobile');
     if (user && loginBtn) { loginBtn.href = '/dashboard.html'; loginBtn.textContent = 'Dashboard'; }
+    if (user && loginBtnMobile) { loginBtnMobile.href = '/dashboard.html'; loginBtnMobile.textContent = 'Dashboard'; }
   });
 
 (function () {
@@ -492,6 +512,28 @@
       });
     });
   }
+})();
+</script>
+<script>
+(function() {
+  var hamburger = document.getElementById('nav-hamburger');
+  var mobileMenu = document.getElementById('mobile-menu');
+  if (!hamburger || !mobileMenu) return;
+  function closeMenu() {
+    mobileMenu.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    mobileMenu.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  hamburger.addEventListener('click', function() {
+    var isOpen = mobileMenu.classList.toggle('open');
+    hamburger.setAttribute('aria-expanded', String(isOpen));
+    mobileMenu.setAttribute('aria-hidden', String(!isOpen));
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+  mobileMenu.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', closeMenu);
+  });
 })();
 </script>
 </body>
