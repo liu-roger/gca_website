@@ -48,10 +48,14 @@
     .gc-bl { bottom:10px; left:12px; }
     .gc-br { bottom:10px; right:12px; }
 
-    /* ─── LEDGER STRIP ──────────────────────────────────────────── */
-    .ledger { border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--bg-2); padding:18px 0; }
-    .led-in { display:grid; grid-template-columns:repeat(4,1fr); gap:32px; font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--fg-subtle); }
-    .led-in > div b { display:block; color:var(--fg); font-weight:500; margin-top:4px; letter-spacing:.08em; }
+    /* ─── LEDGER STRIP (marquee) ────────────────────────────────── */
+    .ledger { border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--bg-2); padding:18px 0; overflow:hidden; }
+    .led-track { display:flex; width:max-content; animation:ledger-scroll 34s linear infinite; will-change:transform; }
+    .led-track > div { flex:0 0 auto; padding:0 48px; border-right:1px solid var(--border); font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--fg-subtle); white-space:nowrap; }
+    .led-track > div b { display:block; color:var(--fg); font-weight:500; margin-top:4px; letter-spacing:.08em; }
+    .ledger:hover .led-track { animation-play-state:paused; }
+    @keyframes ledger-scroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+    @media (prefers-reduced-motion:reduce) { .led-track { animation:none; } }
 
     /* ─── §01 STATEMENT ─────────────────────────────────────────── */
     .statement { padding:120px 0 110px; }
@@ -194,7 +198,8 @@
       .apply-side { position:static; }
       .af-foot { align-items:stretch; }
       .af-submit { justify-content:space-between; }
-      .led-in { grid-template-columns:repeat(2,1fr); gap:20px; }
+      .led-track { animation-duration:24s; }
+      .led-track > div { padding:0 32px; }
     }
     @media (max-width:640px) {
       .wrap { padding:0 20px; }
@@ -331,13 +336,15 @@
 
 <!-- ═══════════════════════ LEDGER STRIP ══════════════════════ -->
 <div class="ledger">
-  <div class="wrap">
-    <div class="led-in">
-      <div>Status<b>Non-profit · Non-political</b></div>
-      <div>Reach<b>10+ Countries represented</b></div>
-      <div>Home<b>Shenzhen · Mainland China</b></div>
-      <div>Purpose<b>To connect, convene, advance</b></div>
-    </div>
+  <div class="led-track">
+    <div>Status<b>Non-profit · Non-political</b></div>
+    <div>Reach<b>10+ Countries represented</b></div>
+    <div>Home<b>Shenzhen · Mainland China</b></div>
+    <div>Purpose<b>To connect, convene, advance</b></div>
+    <div aria-hidden="true">Status<b>Non-profit · Non-political</b></div>
+    <div aria-hidden="true">Reach<b>10+ Countries represented</b></div>
+    <div aria-hidden="true">Home<b>Shenzhen · Mainland China</b></div>
+    <div aria-hidden="true">Purpose<b>To connect, convene, advance</b></div>
   </div>
 </div>
 
